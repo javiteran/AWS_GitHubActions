@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+
+<head>
+    <title>Classroom List</title>
+</head>
+<body>
+    {% include 'menu.html' %}
+
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Class Name</th>
+                    <th>Course</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for classroom in classrooms %}
+                <tr>
+                    <td>{{ classroom.nameclass }}</td>
+                    <td><span class="course-badge">{{ classroom.course }}</span></td>
+                    <td class="actions-cell">
+                        <a href="/edit_classroom/{{ classroom.id }}" class="btn-edit" title="Edit Classroom">
+                            ✏️
+                        </a>
+                        <a href="/delete_classroom/{{ classroom.id }}" class="btn-delete" title="Delete Classroom" 
+                           onclick="return confirm('Are you sure you want to delete classroom {{ classroom.nameclass }}?')">
+                            🗑️
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

@@ -1,0 +1,15 @@
+<nav class="main-nav">
+    <div class="nav-brand">
+        <h2>🏫 School System
+            {% if current_page %}
+                <span class="current-page">→ {{ current_page }}</span>
+            {% endif %}
+        </h2>
+    </div>
+    <ul class="nav-menu">
+        <li class="nav-item"><a href="/students" class="nav-link {{ 'active' if current_route == 'students' }}">👥 List Students</a></li>
+        <li class="nav-item"><a href="/classrooms" class="nav-link {{ 'active' if current_route == 'classrooms' }}">🏛️ List Classrooms</a></li>
+        <li class="nav-item"><a href="/add_student" class="nav-link {{ 'active' if current_route == 'add_student' }}">➕ Add Student</a></li>
+        <li class="nav-item"><a href="/add_classroom" class="nav-link {{ 'active' if current_route == 'add_classroom' }}">🏫 Add Classroom</a></li>
+    </ul>
+</nav>

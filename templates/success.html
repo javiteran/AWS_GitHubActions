@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+<head>
+    <title>Success</title>
+</head>
+<body>
+    {% include 'menu.html' %}
+    <div class="success-container">
+        <div class="success-message">
+            <div class="success-icon">✅</div>
+            <h1>{{ title }}</h1>
+            <p>{{ message }}</p>
+            <div class="action-buttons">
+                {% if action_type == 'student' %}
+                    <a href="/students" class="btn-primary">📋 View All Students</a>
+                    <a href="/add_student" class="btn-secondary">➕ Add Another Student</a>
+                {% elif action_type == 'classroom' %}
+                    <a href="/classrooms" class="btn-primary">📋 View All Classrooms</a>
+                    <a href="/add_classroom" class="btn-secondary">➕ Add Another Classroom</a>
+                {% endif %}
+                <a href="/" class="btn-tertiary">🏠 Go Home</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
