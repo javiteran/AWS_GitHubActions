@@ -95,19 +95,20 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
           AWS_ACCOUNT_ID: ${{ steps.get-aws-info.outputs.account-id }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
-
+          SECRET_ARN: ${{ steps.get-aws-info.outputs.secret-arn }}
         run: |
+          echo $SECRET_ARN
           # Reemplazar placeholders en el archivo de definición de tarea
           SECRET_ARN=$(aws secretsmanager describe-secret --secret-id flask-app-prod-secrets --query 'ARN' --output text)
           sed "s|tu-repositorio-aws/tu-imagen:latest|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" ecs-task-def.json > ecs-task-def-rendered.json
           sed -i "s|{{AWS_ACCOUNT_ID}}|$AWS_ACCOUNT_ID|g" ecs-task-def-rendered.json
           sed -i "s|{{AWS_REGION}}|$AWS_REGION|g" ecs-task-def-rendered.json
-          # Reemplazar el ARN base del secreto (sin los sufijos específicos)
-          SECRET_ARN_BASE=$(echo $SECRET_ARN | sed 's/-[^-]*$//')
-          sed -i "s|arn:aws:secretsmanager:{{AWS_REGION}}:{{AWS_ACCOUNT_ID}}:secret:flask-app-prod-secrets-XXXXXX|$SECRET_ARN_BASE|g" ecs-task-def-rendered.json
+          # Reemplazar el ARN del secreto completo
+          echo $SECRET_ARN
+          #arn:aws:secretsmanager
+          sed -i "s|arn:aws:secretsmanager|$SECRET_ARN|g" ecs-task-def-rendered.json
+          #sed -i "s|arn:aws:secretsmanager:{{AWS_REGION}}:{{AWS_ACCOUNT_ID}}:secret:flask-app-prod-secrets-XXXXXX|$SECRET_ARN|g" ecs-task-def-rendered.json
           echo "✅ Task definition preparada:"
-          echo "🔍 SECRET_ARN completo: $SECRET_ARN"
-          echo "🔍 SECRET_ARN base usado: $SECRET_ARN_BASE"
           cat ecs-task-def-rendered.json
 
       - name: Update ECS service

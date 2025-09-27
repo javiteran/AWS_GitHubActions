@@ -34,19 +34,19 @@
       "secrets": [
         {
           "name": "DB_HOST",
-          "valueFrom": "arn:aws:secretsmanager:{{AWS_REGION}}:{{AWS_ACCOUNT_ID}}:secret:flask-app-prod-secrets-XXXXXX:DB_HOST::"
+          "valueFrom": "arn:aws:secretsmanager:DB_HOST::"
         },
         {
           "name": "DB_USER", 
-          "valueFrom": "arn:aws:secretsmanager:{{AWS_REGION}}:{{AWS_ACCOUNT_ID}}:secret:flask-app-prod-secrets-XXXXXX:DB_USER::"
+          "valueFrom": "arn:aws:secretsmanager:DB_USER::"
         },
         {
           "name": "DB_PASSWORD",
-          "valueFrom": "arn:aws:secretsmanager:{{AWS_REGION}}:{{AWS_ACCOUNT_ID}}:secret:flask-app-prod-secrets-XXXXXX:DB_PASSWORD::"
+          "valueFrom": "arn:aws:secretsmanager:DB_PASSWORD::"
         },
         {
           "name": "DB_NAME",
-          "valueFrom": "arn:aws:secretsmanager:{{AWS_REGION}}:{{AWS_ACCOUNT_ID}}:secret:flask-app-prod-secrets-XXXXXX:DB_NAME::"
+          "valueFrom": "arn:aws:secretsmanager:DB_NAME::"
         }
       ],
       "logConfiguration": {
