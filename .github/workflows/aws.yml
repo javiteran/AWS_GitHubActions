@@ -31,7 +31,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
 
-      - name: Get AWS Account ID and Secret ARN
+      - name: Get AWS Account ID and el ARN del secreto de AWS Server Manager
         id: get-aws-info
         run: |
           ACCOUNT_ID=$(aws sts get-caller-identity --query 'Account' --output text)
@@ -95,9 +95,10 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
           AWS_ACCOUNT_ID: ${{ steps.get-aws-info.outputs.account-id }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
-          SECRET_ARN: ${{ steps.get-aws-info.outputs.secret-arn }}
+
         run: |
           # Reemplazar placeholders en el archivo de definición de tarea
+          SECRET_ARN=$(aws secretsmanager describe-secret --secret-id flask-app-prod-secrets --query 'ARN' --output text)
           sed "s|tu-repositorio-aws/tu-imagen:latest|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" ecs-task-def.json > ecs-task-def-rendered.json
           sed -i "s|{{AWS_ACCOUNT_ID}}|$AWS_ACCOUNT_ID|g" ecs-task-def-rendered.json
           sed -i "s|{{AWS_REGION}}|$AWS_REGION|g" ecs-task-def-rendered.json
