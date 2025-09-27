@@ -5,7 +5,7 @@ on:
     branches: ["main"]
   pull_request:
     branches: [ "main" ]
-    
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -42,6 +42,14 @@ jobs:
           SECRET_ARN=$(aws secretsmanager describe-secret --secret-id flask-app-prod-secrets --query 'ARN' --output text)
           echo "secret-arn=$SECRET_ARN" >> $GITHUB_OUTPUT
           echo "Secret ARN: $SECRET_ARN"
+          
+          # Obtener y mostrar el valor de DB_HOST (solo para debug)
+          DB_HOST=$(aws secretsmanager get-secret-value --secret-id flask-app-prod-secrets --query 'SecretString' --output text | jq -r '.DB_HOST')
+          echo "🔍 DB_HOST obtenido desde AWS Secrets Manager: $DB_HOST"
+          
+          # Opcional: Ver todos los secretos (sin valores sensibles como passwords)
+          echo "📋 Secretos disponibles en flask-app-prod-secrets:"
+          aws secretsmanager get-secret-value --secret-id flask-app-prod-secrets --query 'SecretString' --output text | jq -r 'keys[]'
 
       - name: Login to Amazon ECR
         id: login-ecr
