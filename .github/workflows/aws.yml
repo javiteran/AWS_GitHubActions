@@ -43,13 +43,36 @@ jobs:
           echo "secret-arn=$SECRET_ARN" >> $GITHUB_OUTPUT
           echo "Secret ARN: $SECRET_ARN"
           
-          # Obtener y mostrar el valor de DB_HOST (solo para debug)
-          DB_HOST=$(aws secretsmanager get-secret-value --secret-id flask-app-prod-secrets --query 'SecretString' --output text | jq -r '.DB_HOST')
-          echo "🔍 DB_HOST obtenido desde AWS Secrets Manager: $DB_HOST"
+          # Obtener todos los secretos y crear archivo .env
+          echo "🔧 Creando archivo .env con secretos de AWS..."
+          SECRET_JSON=$(aws secretsmanager get-secret-value --secret-id flask-app-prod-secrets --query 'SecretString' --output text)
           
-          # Opcional: Ver todos los secretos (sin valores sensibles como passwords)
+          # Extraer cada valor y escribir al archivo .env
+          DB_HOST=$(echo "$SECRET_JSON" | jq -r '.DB_HOST')
+          DB_NAME=$(echo "$SECRET_JSON" | jq -r '.DB_NAME')
+          DB_PASSWORD=$(echo "$SECRET_JSON" | jq -r '.DB_PASSWORD')
+          DB_USER=$(echo "$SECRET_JSON" | jq -r '.DB_USER')
+          
+          # Crear archivo .env
+          cat > .env << EOF
+          DB_HOST=$DB_HOST
+          DB_NAME=$DB_NAME
+          DB_PASSWORD=$DB_PASSWORD
+          DB_USER=$DB_USER
+          DB_PORT=3306
+          FLASK_HOST=0.0.0.0
+          FLASK_PORT=80
+          FLASK_DEBUG=False
+          EOF
+          
+          echo "✅ Archivo .env creado con secretos de AWS"
+          echo "🔍 DB_HOST configurado: $DB_HOST"
+          echo "🔍 DB_NAME configurado: $DB_NAME"
+          echo "🔍 DB_USER configurado: $DB_USER"
+          
+          # Opcional: Ver todos los secretos disponibles
           echo "📋 Secretos disponibles en flask-app-prod-secrets:"
-          aws secretsmanager get-secret-value --secret-id flask-app-prod-secrets --query 'SecretString' --output text | jq -r 'keys[]'
+          echo "$SECRET_JSON" | jq -r 'keys[]'
 
       - name: Login to Amazon ECR
         id: login-ecr
