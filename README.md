@@ -6,6 +6,23 @@
     source v_env_flask_chatgpt/bin/activate
 
 
+## Secretos en Github Actions y AWS Secrets Manager
+
+### Github Actions Secrets
+- **Uso:** Almacenar credenciales y configuraciones sensibles
+- **Acceso:** Solo disponible en el contexto del repositorio
+- **Necesitamos:** `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, 'AWS_SESSION_TOKEN', `AWS_REGION`, `ECR_REPOSITORY`, `ECS_CLUSTER`
+
+![Configuración de GitHub Secrets](imagenes/GitHubSecretos.PNG)
+*Configuración de secretos necesarios en GitHub Actions para el deployment en AWS*
+
+
+
+### AWS Secrets Manager
+- **Uso:** Almacenar y gestionar secretos de forma segura
+- **Acceso:** Integración con servicios de AWS (ECS, Lambda, etc.)
+- **Ejemplo:** Credenciales de base de datos, API keys
+
 ## 📋 Instrucciones de Instalación Segura
 
 ### 1️⃣ Configurar Variables de Entorno
