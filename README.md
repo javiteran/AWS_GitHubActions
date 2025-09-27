@@ -103,3 +103,26 @@ python app.py
 
 ---
 *🔐 La seguridad es responsabilidad de todos. Mantén las credenciales seguras.*
+
+
+
+## TODO AWS CloudWatch Logs. IMPORTANTE
+- **Uso:** Monitoreo y almacenamiento de logs de la aplicación
+- **Configuración:** Asegúrate de que el rol de ejecución de la tarea ECS tenga permisos para escribir en CloudWatch Logs
+- **Beneficio:** Facilita la auditoría y solución de problemas sin exponer información sensible
+- Hay que crear un grupo de registros en CloudWatch llamado `/ecs/flask-app` para que los logs se almacenen correctamente.
+
+## TODO Crear un cluster ECS
+- En la consola de AWS, navega a ECS > Clusters > Create Cluster
+- Selecciona "Networking only" (Fargate)
+- Asigna un nombre al cluster, por ejemplo, `flask-app-cluster`
+- Deja las demás configuraciones por defecto y crea el cluster
+
+## TODO implementar la tarea. Asignar la tarea al cluster ECS
+
+- Esto se tendrá que hacer en el workflow de GitHub Actions, en el paso de deploy.
+
+## TODO AWS VPC y grupo de seguridad
+
+- Abrir el puerto 80 en el grupo de seguridad asociado a la instancia ECS para permitir el tráfico HTTP entrante.
+
