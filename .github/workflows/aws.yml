@@ -30,7 +30,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-#################
+
       - name: Buscar el AWS Account ID y el ARN del secreto de AWS Server Manager
         id: get-aws-info
         run: |
@@ -42,8 +42,6 @@ jobs:
           SECRET_ARN=$(aws secretsmanager describe-secret --secret-id secretos-despliegue-aws --query 'ARN' --output text)
           echo "secret-arn=$SECRET_ARN" >> $GITHUB_OUTPUT
           echo "Secret ARN: $SECRET_ARN"
-          
-
 
       - name: Iniciar sesion en Amazon ECR
         id: login-ecr
