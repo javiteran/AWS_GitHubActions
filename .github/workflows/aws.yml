@@ -43,36 +43,7 @@ jobs:
           echo "secret-arn=$SECRET_ARN" >> $GITHUB_OUTPUT
           echo "Secret ARN: $SECRET_ARN"
           
-          # Obtener todos los secretos y crear archivo .env
-          echo "🔧 Creando archivo .env con secretos de AWS..."
-          SECRET_JSON=$(aws secretsmanager get-secret-value --secret-id secretos-despliegue-aws --query 'SecretString' --output text)
-          
-          # Extraer cada valor y escribir al archivo .env
-          DB_HOST=$(echo "$SECRET_JSON" | jq -r '.DB_HOST')
-          DB_NAME=$(echo "$SECRET_JSON" | jq -r '.DB_NAME')
-          DB_PASSWORD=$(echo "$SECRET_JSON" | jq -r '.DB_PASSWORD')
-          DB_USER=$(echo "$SECRET_JSON" | jq -r '.DB_USER')
-          
-          # Crear archivo .env
-          cat > .env << EOF
-          DB_HOST=$DB_HOST
-          DB_NAME=$DB_NAME
-          DB_PASSWORD=$DB_PASSWORD
-          DB_USER=$DB_USER
-          DB_PORT=3306
-          FLASK_HOST=0.0.0.0
-          FLASK_PORT=80
-          FLASK_DEBUG=False
-          EOF
-          
-          echo "✅ Archivo .env creado con secretos de AWS"
-          echo "🔍 DB_HOST configurado: $DB_HOST"
-          echo "🔍 DB_NAME configurado: $DB_NAME"
-          echo "🔍 DB_USER configurado: $DB_USER"
-          
-          # Opcional: Ver todos los secretos disponibles
-          echo "📋 Secretos disponibles en secretos-despliegue-aws:"
-          echo "$SECRET_JSON" | jq -r 'keys[]'
+
 
       - name: Iniciar sesion en Amazon ECR
         id: login-ecr
@@ -112,6 +83,6 @@ jobs:
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2.1.1
         with:
           task-definition: ecs-task-def-rendered.json
-          service: ${{ secrets.ECS_SERVICE }}
+          #service: ${{ secrets.ECS_SERVICE }}
           cluster: ${{ secrets.ECS_CLUSTER }}
           wait-for-service-stability: true
