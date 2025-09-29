@@ -59,7 +59,7 @@ jobs:
           sed "s|tu-repositorio-aws/tu-imagen:latest|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" ecs-task-def.json > ecs-task-def-rendered.json
           sed -i "s|{{AWS_ACCOUNT_ID}}|$AWS_ACCOUNT_ID|g" ecs-task-def-rendered.json
           sed -i "s|{{AWS_REGION}}|$AWS_REGION|g" ecs-task-def-rendered.json
-          # Reemplazar el ARN del secreto completo
+          # Reemplazar el ARN del secreto completo 
           echo $SECRET_ARN
           #arn:aws:secretsmanager
           sed -i "s|arn:aws:secretsmanager|$SECRET_ARN|g" ecs-task-def-rendered.json
