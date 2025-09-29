@@ -39,13 +39,13 @@ jobs:
           echo "AWS Account ID: $ACCOUNT_ID"
           
           # Obtener el ARN completo del secreto
-          SECRET_ARN=$(aws secretsmanager describe-secret --secret-id flask-app-prod-secrets --query 'ARN' --output text)
+          SECRET_ARN=$(aws secretsmanager describe-secret --secret-id secretos-despliegue-aws --query 'ARN' --output text)
           echo "secret-arn=$SECRET_ARN" >> $GITHUB_OUTPUT
           echo "Secret ARN: $SECRET_ARN"
           
           # Obtener todos los secretos y crear archivo .env
           echo "🔧 Creando archivo .env con secretos de AWS..."
-          SECRET_JSON=$(aws secretsmanager get-secret-value --secret-id flask-app-prod-secrets --query 'SecretString' --output text)
+          SECRET_JSON=$(aws secretsmanager get-secret-value --secret-id secretos-despliegue-aws --query 'SecretString' --output text)
           
           # Extraer cada valor y escribir al archivo .env
           DB_HOST=$(echo "$SECRET_JSON" | jq -r '.DB_HOST')
@@ -71,7 +71,7 @@ jobs:
           echo "🔍 DB_USER configurado: $DB_USER"
           
           # Opcional: Ver todos los secretos disponibles
-          echo "📋 Secretos disponibles en flask-app-prod-secrets:"
+          echo "📋 Secretos disponibles en secretos-despliegue-aws:"
           echo "$SECRET_JSON" | jq -r 'keys[]'
 
       - name: Login to Amazon ECR
@@ -105,7 +105,7 @@ jobs:
           echo $SECRET_ARN
           #arn:aws:secretsmanager
           sed -i "s|arn:aws:secretsmanager|$SECRET_ARN|g" ecs-task-def-rendered.json
-          echo "✅ Task definition preparada:" 
+          echo "✅ Task definition preparada:"
           cat ecs-task-def-rendered.json
       - name: Update ECS service
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2.1.1
