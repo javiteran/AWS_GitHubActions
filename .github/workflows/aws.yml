@@ -14,7 +14,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Configure AWS Credentials1
+      - name: Configurar Credenciales AWS
         uses: aws-actions/configure-aws-credentials@v5.0.0
         with:
           aws-region: ${{ secrets.AWS_REGION }}              
@@ -30,55 +30,13 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+#################
 
-      - name: Get AWS Account ID and el ARN del secreto de AWS Server Manager
-        id: get-aws-info
-        run: |
-          ACCOUNT_ID=$(aws sts get-caller-identity --query 'Account' --output text)
-          echo "account-id=$ACCOUNT_ID" >> $GITHUB_OUTPUT
-          echo "AWS Account ID: $ACCOUNT_ID"
-          
-          # Obtener el ARN completo del secreto
-          SECRET_ARN=$(aws secretsmanager describe-secret --secret-id secretos-despliegue-aws --query 'ARN' --output text)
-          echo "secret-arn=$SECRET_ARN" >> $GITHUB_OUTPUT
-          echo "Secret ARN: $SECRET_ARN"
-          
-          # Obtener todos los secretos y crear archivo .env
-          echo "🔧 Creando archivo .env con secretos de AWS..."
-          SECRET_JSON=$(aws secretsmanager get-secret-value --secret-id secretos-despliegue-aws --query 'SecretString' --output text)
-          
-          # Extraer cada valor y escribir al archivo .env
-          DB_HOST=$(echo "$SECRET_JSON" | jq -r '.DB_HOST')
-          DB_NAME=$(echo "$SECRET_JSON" | jq -r '.DB_NAME')
-          DB_PASSWORD=$(echo "$SECRET_JSON" | jq -r '.DB_PASSWORD')
-          DB_USER=$(echo "$SECRET_JSON" | jq -r '.DB_USER')
-          
-          # Crear archivo .env
-          cat > .env << EOF
-          DB_HOST=$DB_HOST
-          DB_NAME=$DB_NAME
-          DB_PASSWORD=$DB_PASSWORD
-          DB_USER=$DB_USER
-          DB_PORT=3306
-          FLASK_HOST=0.0.0.0
-          FLASK_PORT=80
-          FLASK_DEBUG=False
-          EOF
-          
-          echo "✅ Archivo .env creado con secretos de AWS"
-          echo "🔍 DB_HOST configurado: $DB_HOST"
-          echo "🔍 DB_NAME configurado: $DB_NAME"
-          echo "🔍 DB_USER configurado: $DB_USER"
-          
-          # Opcional: Ver todos los secretos disponibles
-          echo "📋 Secretos disponibles en secretos-despliegue-aws:"
-          echo "$SECRET_JSON" | jq -r 'keys[]'
-
-      - name: Login to Amazon ECR
+      - name: Iniciar sesion en Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build, tag, and push image to ECR
+      - name: Build, tag, and push image to ECR. Elastic Container Registry
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
@@ -107,10 +65,18 @@ jobs:
           sed -i "s|arn:aws:secretsmanager|$SECRET_ARN|g" ecs-task-def-rendered.json
           echo "✅ Task definition preparada:"
           cat ecs-task-def-rendered.json
-      - name: Update ECS service
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v2.1.1
+
+      - name: Registrar ECS Task Definition
+        id: register-task-def
+        uses: aws-actions/amazon-ecs-register-task-definition@v1
         with:
           task-definition: ecs-task-def-rendered.json
+
+      - name: Actualizar el servicio ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2.1.1
+        with:
+          #task-definition: ecs-task-def-rendered.json
+          task-definition: ${{ steps.register-task-def.outputs.task-definition-arn }}  # En lugar del archivo
           service: ${{ secrets.ECS_SERVICE }}
           cluster: ${{ secrets.ECS_CLUSTER }}
           wait-for-service-stability: true
