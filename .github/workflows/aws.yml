@@ -105,7 +105,7 @@ jobs:
           echo $SECRET_ARN
           #arn:aws:secretsmanager
           sed -i "s|arn:aws:secretsmanager|$SECRET_ARN|g" ecs-task-def-rendered.json
-          echo "✅ Task definition preparada:"
+          echo "✅ Task definition preparada:" 
           cat ecs-task-def-rendered.json
       - name: Update ECS service
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2.1.1
