@@ -61,6 +61,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+          AWS_PROYECTO: ${{ secrets.AWS_PROYECTO }}
           IMAGE_TAG: ${{ github.sha }}
           AWS_ACCOUNT_ID: ${{ steps.get-aws-info.outputs.account-id }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -70,6 +71,7 @@ jobs:
           sed "s|tu-repositorio-aws/tu-imagen:latest|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" ecs-task-def.json > ecs-task-def-rendered.json
           sed -i "s|{{AWS_ACCOUNT_ID}}|$AWS_ACCOUNT_ID|g" ecs-task-def-rendered.json
           sed -i "s|{{AWS_REGION}}|$AWS_REGION|g" ecs-task-def-rendered.json
+          sed -i "s|{{AWS_PROYECTO}}|$AWS_PROYECTO|g" ecs-task-def-rendered.json
           # Reemplazar el ARN del secreto completo 
           echo $SECRET_ARN
           #arn:aws:secretsmanager
