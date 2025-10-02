@@ -109,4 +109,4 @@ jobs:
             echo "No se encontró IP pública asociada."
             exit 1
           fi
-          echo "La IP pública del contenedor ECS es: $PUBLIC_IP"
+          echo "La IPv4 pública del contenedor ECS es: $PUBLIC_IP"
