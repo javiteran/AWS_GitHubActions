@@ -5,7 +5,6 @@
     python3 -m venv v_env_flask_chatgpt
     source v_env_flask_chatgpt/bin/activate
 
-
 ## Secretos en Github Actions y AWS Secrets Manager
 
 ### Github Actions Secrets 
