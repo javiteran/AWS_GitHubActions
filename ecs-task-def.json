@@ -1,5 +1,5 @@
 {
-  "family": "flask-app-task",
+  "family": "ahora-task",
   "networkMode": "awsvpc",
   "requiresCompatibilities": ["FARGATE"],
   "cpu": "256",
