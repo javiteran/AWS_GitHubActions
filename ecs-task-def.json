@@ -1,5 +1,5 @@
 {
-  "family": "ahora-task",
+  "family": "{{AWS_PROYECTO}}-task",
   "networkMode": "awsvpc",
   "requiresCompatibilities": ["FARGATE"],
   "cpu": "256",
@@ -8,7 +8,7 @@
   "taskRoleArn": "arn:aws:iam::{{AWS_ACCOUNT_ID}}:role/LabRole",
   "containerDefinitions": [
     {
-      "name": "flask-app",
+      "name": "{{AWS_PROYECTO}}-app",
       "image": "tu-repositorio-aws/tu-imagen:latest",
       "portMappings": [
         {
@@ -52,7 +52,7 @@
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "/ecs/flask-app",
+          "awslogs-group": "/ecs/{{AWS_PROYECTO}}",
           "awslogs-region": "{{AWS_REGION}}",
           "awslogs-stream-prefix": "ecs"
         }
