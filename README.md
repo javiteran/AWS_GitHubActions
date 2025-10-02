@@ -8,7 +8,7 @@
 
 ## Secretos en Github Actions y AWS Secrets Manager
 
-### Github Actions Secrets
+### Github Actions Secrets 
 - **Uso:** Almacenar credenciales y configuraciones sensibles
 - **Acceso:** Solo disponible en el contexto del repositorio
 - **Necesitamos:** `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, 'AWS_SESSION_TOKEN', `AWS_REGION`, `ECR_REPOSITORY`, `ECS_CLUSTER`
