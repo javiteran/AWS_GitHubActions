@@ -150,4 +150,4 @@ aws cloudformation deploy \
 
 ---
 
-*Desarrollado con ❤️ para despliegues seguros y automáticos en AWS.*
+*Desarrollado para despliegues seguros y automáticos en AWS.*
