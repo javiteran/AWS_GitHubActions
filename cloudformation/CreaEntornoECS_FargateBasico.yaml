@@ -31,10 +31,10 @@ Parameters:
     Default: '10.0.4.0/24'
     Description: CIDR block for private subnet 2
   
-  ServiceName:
-    Type: String
-    Default: 'tutorial-app'
-    Description: Name of the ECS service
+  #ServiceName:
+  #  Type: String
+  #  Default: 'tutorial-app'
+  #  Description: Name of the ECS service
   
   ContainerPort:
     Type: Number
@@ -360,7 +360,8 @@ Resources:
       ExecutionRoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/LabRole"
       TaskRoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/LabRole"
       ContainerDefinitions:
-        - Name: !Ref ServiceName
+        #- Name: !Ref ServiceName
+        - Name: !Sub '${AWS::StackName}-container'
           Image: !Ref ContainerImage
           PortMappings:
             - ContainerPort: !Ref ContainerPort
@@ -404,7 +405,8 @@ Resources:
             - !Ref PrivateSubnet1
             - !Ref PrivateSubnet2
       LoadBalancers:
-        - ContainerName: !Ref ServiceName
+        #- ContainerName: !Ref ServiceName
+        - ContainerName: !Sub '${AWS::StackName}-container'
           ContainerPort: !Ref ContainerPort
           TargetGroupArn: !Ref ALBTargetGroup
       DeploymentConfiguration:

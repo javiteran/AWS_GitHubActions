@@ -8,7 +8,7 @@
   "taskRoleArn": "arn:aws:iam::{{AWS_ACCOUNT_ID}}:role/LabRole",
   "containerDefinitions": [
     {
-      "name": "{{AWS_PROYECTO}}-app",
+      "name": "{{AWS_PROYECTO}}-container",
       "image": "tu-repositorio-aws/tu-imagen:latest",
       "portMappings": [
         {
