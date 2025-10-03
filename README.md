@@ -16,6 +16,8 @@
 *Configuración de secretos necesarios en GitHub Actions para el deployment en AWS*
 
 
+El nombre se guardan los secretos en AWS Secret Manager es "secretos-despliegue-aws"
+
 
 ### AWS Secrets Manager
 - **Uso:** Almacenar y gestionar secretos de forma segura
@@ -124,4 +126,3 @@ python app.py
 ## TODO AWS VPC y grupo de seguridad
 
 - Abrir el puerto 80 en el grupo de seguridad asociado a la instancia ECS para permitir el tráfico HTTP entrante.
-
