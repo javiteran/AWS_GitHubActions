@@ -50,34 +50,29 @@ jobs:
       - name: Build, tag, and push image to ECR. Elastic Container Registry
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+          #ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          echo $ECR_REGISTRY
-          echo $ECR_REPOSITORY
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "Imagen construida y subida: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          docker build -t $ECR_REGISTRY/${{ secrets.AWS_PROYECTO }}-repo:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/${{ secrets.AWS_PROYECTO }}-repo:$IMAGE_TAG
+          echo "Imagen construida y subida: $ECR_REGISTRY/${{ secrets.AWS_PROYECTO }}-repo:$IMAGE_TAG"
 
       - name: Prepare ECS Task Definition
         env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
           AWS_PROYECTO: ${{ secrets.AWS_PROYECTO }}
-          IMAGE_TAG: ${{ github.sha }}
           AWS_ACCOUNT_ID: ${{ steps.get-aws-info.outputs.account-id }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+          #ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
           SECRET_ARN: ${{ steps.get-aws-info.outputs.secret-arn }}
         run: |
-          # Reemplazar placeholders en el archivo de definición de tarea
-          #sed "s|tu-repositorio-aws/tu-imagen:latest|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" ecs-task-def.json > ecs-task-def-rendered.json
+          # Reemplazar variables y secretos en el archivo de definición de tarea
           sed "s|tu-repositorio-aws/tu-imagen:latest|$ECR_REGISTRY/${{ secrets.AWS_PROYECTO }}-repo:$IMAGE_TAG|g" ecs-task-def.json > ecs-task-def-rendered.json          
           sed -i "s|{{AWS_ACCOUNT_ID}}|$AWS_ACCOUNT_ID|g" ecs-task-def-rendered.json
-          sed -i "s|{{AWS_REGION}}|$AWS_REGION|g" ecs-task-def-rendered.json
-          sed -i "s|{{AWS_PROYECTO}}|$AWS_PROYECTO|g" ecs-task-def-rendered.json
-          # Reemplazar el ARN del secreto completo 
-          echo $SECRET_ARN
-          #arn:aws:secretsmanager
+          sed -i "s|{{AWS_REGION}}|$AWS_REGION|g"         ecs-task-def-rendered.json
+          sed -i "s|{{AWS_PROYECTO}}|$AWS_PROYECTO|g"     ecs-task-def-rendered.json
+          # Reemplazar el ARN del secreto completo. arn:aws:secretsmanager
           sed -i "s|arn:aws:secretsmanager|$SECRET_ARN|g" ecs-task-def-rendered.json
           echo "✅ Task definition preparada:"
           cat ecs-task-def-rendered.json
@@ -86,35 +81,6 @@ jobs:
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2.1.1
         with:
           task-definition: ecs-task-def-rendered.json
-          #service: ${{ secrets.ECS_SERVICE }}
-          #cluster: ${{ secrets.ECS_CLUSTER }}
           service: ${{ secrets.AWS_PROYECTO }}-service
           cluster: ${{ secrets.AWS_PROYECTO }}-cluster
-
           wait-for-service-stability: true
-
-      - name: Mostrar IP pública del contenedor ECS
-        env:
-          CLUSTER: ${{ secrets.ECS_CLUSTER }}
-          SERVICE: ${{ secrets.ECS_SERVICE }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-        run: |
-          echo "Buscando la última tarea lanzada en el servicio..."
-          TASK_ARN=$(aws ecs list-tasks --cluster "$CLUSTER" --service-name "$SERVICE" --desired-status RUNNING --region "$AWS_REGION" --query 'taskArns[-1]' --output text)
-          echo "Última tarea: $TASK_ARN"
-          if [ "$TASK_ARN" = "None" ] || [ -z "$TASK_ARN" ]; then
-            echo "No se encontró ninguna tarea en ejecución."
-            exit 1
-          fi
-          ENI_ID=$(aws ecs describe-tasks --cluster "$CLUSTER" --tasks "$TASK_ARN" --region "$AWS_REGION" --query 'tasks[0].attachments[0].details[?name==`networkInterfaceId`].value' --output text)
-          echo "ENI: $ENI_ID"
-          if [ -z "$ENI_ID" ]; then
-            echo "No se pudo obtener el ENI de la tarea."
-            exit 1
-          fi
-          PUBLIC_IP=$(aws ec2 describe-network-interfaces --network-interface-ids "$ENI_ID" --region "$AWS_REGION" --query 'NetworkInterfaces[0].Association.PublicIp' --output text)
-          if [ "$PUBLIC_IP" = "None" ] || [ -z "$PUBLIC_IP" ]; then
-            echo "No se encontró IP pública asociada."
-            exit 1
-          fi
-          echo "La IPv4 pública del contenedor ECS es: $PUBLIC_IP"
