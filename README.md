@@ -65,7 +65,8 @@ GitHub Actions ──► ECR (Docker Image)
 ![Configuración de GitHub Secrets](imagenes/GitHubSecretos.PNG)
 ![Configuración de variables GitHub](imagenes/GitHubVariables.PNG)
 
-Importante. En AWS Academy los ID, KEY y token de sesión (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` y `AWS_SESSION_TOKEN`) cambian cada vez que se inicia el laboratorio. Así que debes actualizar estos secretos para evitar fallos en el workflow.
+Importante. En AWS Academy los ID, KEY y token de sesión (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` y `AWS_SESSION_TOKEN`) cambian cada vez que se inicia el laboratorio. Así que debes actualizar estos secretos para evitar fallos en el workflow
+
 ---
 
 ## 🛠️ Flujo de Despliegue (CI/CD)
