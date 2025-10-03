@@ -131,14 +131,14 @@ Resources:
         - Key: Name
           Value: !Sub '${AWS::StackName}-nat-eip-1'
 
-  NatGateway2EIP:
-    Type: AWS::EC2::EIP
-    DependsOn: InternetGatewayAttachment
-    Properties:
-      Domain: vpc
-      Tags:
-        - Key: Name
-          Value: !Sub '${AWS::StackName}-nat-eip-2'
+  #NatGateway2EIP:
+  #  Type: AWS::EC2::EIP
+  #  DependsOn: InternetGatewayAttachment
+  #  Properties:
+  #    Domain: vpc
+  #    Tags:
+  #      - Key: Name
+  #        Value: !Sub '${AWS::StackName}-nat-eip-2'
 
   NatGateway1:
     Type: AWS::EC2::NatGateway
@@ -149,14 +149,14 @@ Resources:
         - Key: Name
           Value: !Sub '${AWS::StackName}-nat-1'
 
-  NatGateway2:
-    Type: AWS::EC2::NatGateway
-    Properties:
-      AllocationId: !GetAtt NatGateway2EIP.AllocationId
-      SubnetId: !Ref PublicSubnet2
-      Tags:
-        - Key: Name
-          Value: !Sub '${AWS::StackName}-nat-2'
+  #NatGateway2:
+  #  Type: AWS::EC2::NatGateway
+  #  Properties:
+  #    AllocationId: !GetAtt NatGateway2EIP.AllocationId
+  #    SubnetId: !Ref PublicSubnet2
+  #    Tags:
+  #      - Key: Name
+  #        Value: !Sub '${AWS::StackName}-nat-2'
 
   # Route Tables
   PublicRouteTable:
@@ -221,7 +221,8 @@ Resources:
     Properties:
       RouteTableId: !Ref PrivateRouteTable2
       DestinationCidrBlock: 0.0.0.0/0
-      NatGatewayId: !Ref NatGateway2
+      NatGatewayId: !Ref NatGateway1
+      #NatGatewayId: !Ref NatGateway2      
 
   PrivateSubnet2RouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation

@@ -2,24 +2,28 @@
 
 ## 📋 Resumen de Cambios
 
-Se ha configurado tu aplicación Flask para leer las credenciales de base de datos desde **AWS Secrets Manager** en lugar de usar variables de entorno hardcodeadas.
+La aplicación Flask está configurada para leer las credenciales de base de datos desde **AWS Secrets Manager** usando la definición de tarea de ECS y el workflow de GitHub Actions. No se usan variables de entorno hardcodeadas.
 
-## 🛠️ Archivos Creados/Modificados
+## 🛠️ Archivos Clave
 
 ### 1️⃣ `ecs-task-def.json`
-- **Nuevo archivo** con la definición de tarea de ECS
-- Configura el contenedor para leer secretos desde AWS Secrets Manager
-- Los secretos `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` se leen automáticamente
+
+- Define la tarea ECS y el contenedor.
+- Configura el contenedor para leer secretos desde AWS Secrets Manager usando la sección `secrets`.
+- Los secretos `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` se leen automáticamente.
 
 ### 2️⃣ `.github/workflows/aws.yml`
-- **Modificado** para obtener el ARN completo del secreto
-- Reemplaza los placeholders con valores reales durante el deployment
-- Usa el archivo de task definition renderizado
+
+- Obtiene el ARN completo del secreto desde AWS Secrets Manager.
+- Reemplaza los placeholders en `ecs-task-def.json` con valores reales durante el deployment.
+- Usa variables de GitHub Actions (`vars.AWS_PROYECTO`) para nombrar recursos de AWS de forma dinámica.
 
 ## 🔑 Secretos Requeridos en AWS Secrets Manager
 
-### Secreto: `flask-app-prod-secrets`
+### Secreto: `secretos-despliegue-aws`
+
 Debe contener las siguientes claves:
+
 ```json
 {
   "DB_HOST": "tu-rds-endpoint.amazonaws.com",
@@ -31,7 +35,8 @@ Debe contener las siguientes claves:
 
 ## ⚙️ Permisos IAM Requeridos
 
-### 1️⃣ Rol de Ejecución de Tareas (`ecsTaskExecutionRole`)
+### 1️⃣ Rol de Ejecución de Tareas (`LabRole`)
+
 ```json
 {
   "Version": "2012-10-17",
@@ -42,7 +47,7 @@ Debe contener las siguientes claves:
         "secretsmanager:GetSecretValue"
       ],
       "Resource": [
-        "arn:aws:secretsmanager:REGION:ACCOUNT-ID:secret:flask-app-prod-secrets-*"
+        "arn:aws:secretsmanager:REGION:ACCOUNT-ID:secret:secretos-despliegue-aws-*"
       ]
     },
     {
@@ -57,37 +62,20 @@ Debe contener las siguientes claves:
 }
 ```
 
-### 2️⃣ Usuario/Rol de GitHub Actions
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "secretsmanager:DescribeSecret"
-      ],
-      "Resource": [
-        "arn:aws:secretsmanager:REGION:ACCOUNT-ID:secret:flask-app-prod-secrets-*"
-      ]
-    }
-  ]
-}
-```
+## 🚀 Flujo de Trabajo
 
-## 🚀 Cómo Funciona
-
-1. **GitHub Actions** obtiene el ARN completo del secreto
-2. **Reemplaza placeholders** en `ecs-task-def.json` con valores reales
-3. **ECS** lee los secretos automáticamente al iniciar el contenedor
-4. **Flask** recibe las variables de entorno sin cambios en el código
+1. **GitHub Actions** obtiene el ARN completo del secreto usando AWS CLI.
+2. **Reemplaza placeholders** en `ecs-task-def.json` con valores reales (ARN, nombres, etc.).
+3. **ECS** lee los secretos automáticamente al iniciar el contenedor.
+4. **Flask** recibe las variables de entorno desde los secretos, sin cambios en el código.
 
 ## 🔧 Comandos Útiles
 
-### Crear el secreto (si no existe):
+### Crear el secreto (si no existe)
+
 ```bash
 aws secretsmanager create-secret \
-  --name flask-app-prod-secrets \
+  --name secretos-despliegue-aws \
   --description "Database credentials for Flask app" \
   --secret-string '{
     "DB_HOST": "tu-rds-endpoint.amazonaws.com",
@@ -97,30 +85,38 @@ aws secretsmanager create-secret \
   }'
 ```
 
-### Verificar el secreto:
+### Verificar el secreto
+
 ```bash
 aws secretsmanager get-secret-value \
-  --secret-id flask-app-prod-secrets \
+  --secret-id secretos-despliegue-aws \
   --query SecretString --output text | jq .
 ```
 
-### Obtener el ARN del secreto:
+### Obtener el ARN del secreto
+
 ```bash
 aws secretsmanager describe-secret \
-  --secret-id flask-app-prod-secrets \
+  --secret-id secretos-despliegue-aws \
+  --query ARN --output text
+
+```bash
+aws secretsmanager describe-secret \
+  --secret-id secretos-despliegue-aws \
   --query ARN --output text
 ```
 
-## 📝 Variables en GitHub Secrets
+## 📝 Variables y Secrets en GitHub Actions
 
-Asegúrate de tener estos secretos configurados en GitHub:
-- `AWS_ACCESS_KEY_ID`
-- `AWS_SECRET_ACCESS_KEY`
-- `AWS_SESSION_TOKEN` (si usas credenciales temporales)
-- `AWS_REGION`
-- `ECR_REPOSITORY`
-- `ECS_SERVICE`
-- `ECS_CLUSTER`
+Asegúrate de tener estas variables y secretos configurados en GitHub:
+
+| Nombre                | Tipo    | Descripción                                      |
+|-----------------------|---------|--------------------------------------------------|
+| AWS_ACCESS_KEY_ID     | Secret  | Access key de AWS para autenticación              |
+| AWS_SECRET_ACCESS_KEY | Secret  | Secret key de AWS para autenticación              |
+| AWS_SESSION_TOKEN     | Secret  | Token temporal de sesión (si aplica)              |
+| AWS_REGION            | Secret/Var | Región AWS donde se despliega la infraestructura |
+| AWS_PROYECTO          | Var     | Nombre base para recursos (ECR, ECS, TASK, etc.)        |
 
 ## 🛡️ Beneficios de Seguridad
 
@@ -133,7 +129,7 @@ Asegúrate de tener estos secretos configurados en GitHub:
 
 ## ⚠️ Notas Importantes
 
-- El ARN del secreto incluye un sufijo aleatorio (ej: `-AbCdEf`)
-- El workflow detecta automáticamente este ARN completo
-- Las credenciales nunca aparecen en logs de GitHub Actions
-- ECS inyecta las variables de entorno de forma segura
+- El ARN del secreto incluye un sufijo aleatorio (ej: `-AbCdEf`).
+- El workflow detecta automáticamente este ARN completo.
+- Las credenciales nunca aparecen en logs de GitHub Actions.
+- ECS inyecta las variables de entorno de forma segura.

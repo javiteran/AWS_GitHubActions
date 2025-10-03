@@ -1,4 +1,4 @@
-name: Deploy Flask App to ECS
+name: Despliegue de una Flask App a ECS y ALB usando GitHub Actions
 
 on:
   push:
@@ -11,27 +11,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: 💻 Checkout repo
         uses: actions/checkout@v4
 
-      - name: Configurar Credenciales AWS
+      - name: 🔑 Configurar Credenciales AWS
         uses: aws-actions/configure-aws-credentials@v5.0.0
         with:
-          aws-region: ${{ secrets.AWS_REGION }}              
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region:             ${{ secrets.AWS_REGION }}              
+          aws-access-key-id:      ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token:      ${{ secrets.AWS_SESSION_TOKEN }}
       - name: 🧪 Test AWS credentials antes de configurar 
         run: |
           echo "Probando credenciales AWS..."
           aws sts get-caller-identity || echo "❌ Error al verificar identidad AWS"
         env:
-          aws-region: ${{ secrets.AWS_REGION }}              
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region:             ${{ secrets.AWS_REGION }}              
+          aws-access-key-id:      ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token:      ${{ secrets.AWS_SESSION_TOKEN }}
 
-      - name: Buscar el AWS Account ID y el ARN del secreto de AWS Server Manager
+      - name: 🔒 Buscar el AWS Account ID y el ARN del secreto de AWS Server Manager
         id: get-aws-info
         run: |
           ACCOUNT_ID=$(aws sts get-caller-identity --query 'Account' --output text)
@@ -43,44 +43,45 @@ jobs:
           echo "secret-arn=$SECRET_ARN" >> $GITHUB_OUTPUT
           echo "Secret ARN: $SECRET_ARN"
 
-      - name: Iniciar sesion en Amazon ECR
+          # Este paso guarda las variables account-id y secret-arn para usarlas en pasos posteriores
+
+      - name: 🚪 Iniciar sesion en Amazon ECR. Elastic Container Registry
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build, tag, and push image to ECR. Elastic Container Registry
+      - name: ➡️ Build, tag, and push image to ECR. Elastic Container Registry
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          #ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t $ECR_REGISTRY/${{ secrets.AWS_PROYECTO }}-repo:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/${{ secrets.AWS_PROYECTO }}-repo:$IMAGE_TAG
-          echo "Imagen construida y subida: $ECR_REGISTRY/${{ secrets.AWS_PROYECTO }}-repo:$IMAGE_TAG"
+          docker build -t $ECR_REGISTRY/${{ vars.AWS_PROYECTO }}-repo:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/${{ vars.AWS_PROYECTO }}-repo:$IMAGE_TAG
+          echo "Imagen construida y subida: $ECR_REGISTRY/${{ vars.AWS_PROYECTO }}-repo:$IMAGE_TAG"
 
-      - name: Prepare ECS Task Definition
+      - name: 📄 Preparar la Task Definition para ECS
         env:
-          AWS_PROYECTO: ${{ secrets.AWS_PROYECTO }}
+          AWS_PROYECTO: ${{ vars.AWS_PROYECTO }}
           AWS_ACCOUNT_ID: ${{ steps.get-aws-info.outputs.account-id }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
-          #ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
           SECRET_ARN: ${{ steps.get-aws-info.outputs.secret-arn }}
         run: |
           # Reemplazar variables y secretos en el archivo de definición de tarea
-          sed "s|tu-repositorio-aws/tu-imagen:latest|$ECR_REGISTRY/${{ secrets.AWS_PROYECTO }}-repo:$IMAGE_TAG|g" ecs-task-def.json > ecs-task-def-rendered.json          
+          sed "s|tu-repositorio-aws/tu-imagen:latest|$ECR_REGISTRY/${{ vars.AWS_PROYECTO }}-repo:$IMAGE_TAG|g" ecs-task-def.json > ecs-task-def-rendered.json          
           sed -i "s|{{AWS_ACCOUNT_ID}}|$AWS_ACCOUNT_ID|g" ecs-task-def-rendered.json
           sed -i "s|{{AWS_REGION}}|$AWS_REGION|g"         ecs-task-def-rendered.json
           sed -i "s|{{AWS_PROYECTO}}|$AWS_PROYECTO|g"     ecs-task-def-rendered.json
+          
           # Reemplazar el ARN del secreto completo. arn:aws:secretsmanager
           sed -i "s|arn:aws:secretsmanager|$SECRET_ARN|g" ecs-task-def-rendered.json
           echo "✅ Task definition preparada:"
           cat ecs-task-def-rendered.json
 
-      - name: Actualizar el servicio ECS
+      - name: 🔄 Actualizar el servicio ECS
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2.1.1
         with:
           task-definition: ecs-task-def-rendered.json
-          service: ${{ secrets.AWS_PROYECTO }}-service
-          cluster: ${{ secrets.AWS_PROYECTO }}-cluster
+          service: ${{ vars.AWS_PROYECTO }}-service
+          cluster: ${{ vars.AWS_PROYECTO }}-cluster
           wait-for-service-stability: true
