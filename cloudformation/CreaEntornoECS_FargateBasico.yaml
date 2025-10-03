@@ -8,7 +8,7 @@ Parameters:
     Description: CIDR block for the VPC
   ContainerImage:
     Type: String
-    Default: '590183790645.dkr.ecr.us-east-1.amazonaws.com/iesalisal/despliegueaws:b5b9e62e9c8f3676eb8be93fc7469f89d2978912'
+    Default: 'nginx:latest'
     Description: Container image to use in task definition
 
   PublicSubnet1Cidr:
@@ -30,11 +30,6 @@ Parameters:
     Type: String
     Default: '10.0.4.0/24'
     Description: CIDR block for private subnet 2
-  
-  #ServiceName:
-  #  Type: String
-  #  Default: 'tutorial-app'
-  #  Description: Name of the ECS service
   
   ContainerPort:
     Type: Number
@@ -318,6 +313,12 @@ Resources:
       LoadBalancerArn: !Ref ApplicationLoadBalancer
       Port: 80
       Protocol: HTTP
+
+  # ECR Repository
+  RepositorioECR: 
+    Type: AWS::ECR::Repository
+    Properties: 
+      RepositoryName: !Sub '${AWS::StackName}-repo'
 
   # ECS Cluster
   ECSCluster:
