@@ -362,7 +362,6 @@ Resources:
       ExecutionRoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/LabRole"
       TaskRoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/LabRole"
       ContainerDefinitions:
-        #- Name: !Ref ServiceName
         - Name: !Sub '${AWS::StackName}-container'
           Image: !Ref ContainerImage
           PortMappings:
@@ -407,7 +406,6 @@ Resources:
             - !Ref PrivateSubnet1
             - !Ref PrivateSubnet2
       LoadBalancers:
-        #- ContainerName: !Ref ServiceName
         - ContainerName: !Sub '${AWS::StackName}-container'
           ContainerPort: !Ref ContainerPort
           TargetGroupArn: !Ref ALBTargetGroup

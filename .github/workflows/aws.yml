@@ -78,6 +78,7 @@ jobs:
           echo "✅ Task definition preparada:"
           cat ecs-task-def-rendered.json
 
+
       - name: 🔄 Actualizar el servicio ECS
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2.1.1
         with:
@@ -85,3 +86,15 @@ jobs:
           service: ${{ vars.AWS_PROYECTO }}-service
           cluster: ${{ vars.AWS_PROYECTO }}-cluster
           wait-for-service-stability: true
+
+      - name: 🟢 Forzar DesiredCount a 2 en el servicio ECS
+        run: |
+          aws ecs update-service \
+            --cluster ${{ vars.AWS_PROYECTO }}-cluster \
+            --service ${{ vars.AWS_PROYECTO }}-service \
+            --desired-count 2 \
+            --region ${{ secrets.AWS_REGION }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
