@@ -5,7 +5,7 @@ CREATE TABLE student (
     nameclass VARCHAR(255) NOT NULL,
     note FLOAT
 );
-
+ 
 CREATE TABLE classroom (
     id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
     nameclass VARCHAR(255) NOT NULL,
