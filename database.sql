@@ -12,7 +12,6 @@ CREATE TABLE classroom (
     course VARCHAR(255) NOT NULL
 );
 
-
 INSERT INTO classroom (nameclass, course)
 VALUES ('SRI2015', '2015'),('SRI2016', '2016'),('SRI2017', '2017'),('SRI2018', '2018'),('SRI2019', '2019'),('SRI2020', '2020'),('SRI2021', '2021'),('SRI2022', '2022');
 
