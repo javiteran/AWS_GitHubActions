@@ -87,14 +87,14 @@ jobs:
           cluster: ${{ vars.AWS_PROYECTO }}-cluster
           wait-for-service-stability: true
 
-      - name: 🟢 Forzar DesiredCount a 2 en el servicio ECS
-        run: |
-          aws ecs update-service \
-            --cluster ${{ vars.AWS_PROYECTO }}-cluster \
-            --service ${{ vars.AWS_PROYECTO }}-service \
-            --desired-count 2 \
-            --region ${{ secrets.AWS_REGION }}
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+#      - name: 🟢 Forzar DesiredCount a 2 en el servicio ECS (2 tareas). Creo que no es necesario
+#        run: |
+#          aws ecs update-service \
+#            --cluster ${{ vars.AWS_PROYECTO }}-cluster \
+#            --service ${{ vars.AWS_PROYECTO }}-service \
+#            --desired-count 2 \
+#            --region ${{ secrets.AWS_REGION }}
+#        env:
+#          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
