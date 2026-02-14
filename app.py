@@ -18,6 +18,31 @@ DB_CONFIG = {
     'port': int(os.getenv('DB_PORT', 3306))
 }
 
+def init_db():
+    connection = get_db_connection()
+    if connection:
+        cursor = connection.cursor()
+        # Verificar si la tabla existe
+        cursor.execute("SHOW TABLES LIKE 'student'")
+        result = cursor.fetchone()
+        if not result:
+            print("Inicializando base de datos...")
+            # Leer el archivo SQL
+            try:
+                with open('bbdd/database.sql', 'r') as f:
+                    sql_script = f.read()
+                
+                # Ejecutar comandos SQL separados por ;
+                for statement in sql_script.split(';'):
+                    if statement.strip():
+                        cursor.execute(statement)
+                connection.commit()
+                print("Base de datos inicializada correctamente.")
+            except Exception as e:
+                print(f"Error cargando SQL: {e}")
+        cursor.close()
+        connection.close()
+
 def get_db_connection():
     try:
         connection = mysql.connector.connect(**DB_CONFIG)
@@ -278,6 +303,8 @@ def edit_classroom(classroom_id):
     except Error as e:
         print(f"Error: {e}")
         return "Error al obtener datos de la clase", 500
+
+init_db() # Inicializar la base de datos al iniciar la aplicación
 
 if __name__ == '__main__':
     # Configuración segura del servidor usando variables de entorno

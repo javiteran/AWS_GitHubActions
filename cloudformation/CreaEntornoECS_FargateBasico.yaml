@@ -14,6 +14,12 @@ Parameters:
     NoEcho: true
     MinLength: 8
   
+  DBNombre:
+    Type: String
+    Description: Nombre de la base de datos
+    Default: AlumnosClases
+    MinLength: 8
+  
   VpcCIDR:
     Type: String
     Default: '10.113.0.0/16'
@@ -52,15 +58,16 @@ Resources:
   # =============================================
   DatabaseSecret:
     Type: AWS::SecretsManager::Secret
+    DependsOn: DBInstance
     Properties:
       Name: secretos-despliegue-aws
-      Description: Database credentials for Flask app
+      Description: Credenciales de la base de datos en Secret Manager para la aplicacion Python Flask
       SecretString: !Sub |
         {
-          "DB_HOST": "tu-rds-endpoint.amazonaws.com",
+          "DB_HOST": "${DBInstance.Endpoint.Address}",
           "DB_USER": "${DBUser}",
           "DB_PASSWORD": "${DBPassword}",
-          "DB_NAME": "AlumnosClases"
+          "DB_NAME": "${DBNombre}"
         }
       Tags:
         - Key: Name
@@ -450,6 +457,55 @@ Resources:
         ScaleOutCooldown: 300
         ScaleInCooldown: 300
 
+  # =============================================
+  # Base de Datos RDS MySQL
+  # =============================================
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: Subnets for RDS
+      SubnetIds:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+      Tags:
+        - Key: Name
+          Value: !Sub '${AWS::StackName}-db-subnet-group'
+
+  DBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for RDS
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          SourceSecurityGroupId: !Ref ECSSecurityGroup
+          Description: Allow access from ECS tasks
+      Tags:
+        - Key: Name
+          Value: !Sub '${AWS::StackName}-db-sg'
+
+  DBInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      Engine: mysql
+      EngineVersion: '8.4.7'
+      DBInstanceClass: db.t3.micro
+      AllocatedStorage: 20
+      MasterUsername: !Ref DBUser
+      MasterUserPassword: !Ref DBPassword
+      DBName: !Ref DBNombre
+      DBSubnetGroupName: !Ref DBSubnetGroup
+
+      VPCSecurityGroups:
+        - !Ref DBSecurityGroup
+      PubliclyAccessible: false
+      MultiAZ: false
+      Tags:
+        - Key: Name
+          Value: !Sub '${AWS::StackName}-mysql'
+
 Outputs:
   VPCId:
     Description: VPC ID
@@ -475,14 +531,8 @@ Outputs:
     Export:
       Name: !Sub '${AWS::StackName}-ECS-Service'
 
-  PrivateSubnet1:
-    Description: Private Subnet 1 ID
-    Value: !Ref PrivateSubnet1
+  BaseDatosDNS:
+    Description: DNS of the RDS instance
+    Value: !GetAtt DBInstance.Endpoint.Address
     Export:
-      Name: !Sub '${AWS::StackName}-Private-Subnet-1'
-
-  PrivateSubnet2:
-    Description: Private Subnet 2 ID
-    Value: !Ref PrivateSubnet2
-    Export:
-      Name: !Sub '${AWS::StackName}-Private-Subnet-2'
+      Name: !Sub '${AWS::StackName}-Database-DNS'
