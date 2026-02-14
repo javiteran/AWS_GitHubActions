@@ -54,9 +54,12 @@ def get_db_connection():
 # Define routes and database queries here
 @app.route('/')
 def home():
+    import socket
+    container_id = socket.gethostname()
     return render_template('index.html', 
         current_page='🏠 Home',
-        current_route='home')
+        current_route='home',
+        container_id=container_id)
 
 # Define the student table
 class Student:
@@ -304,12 +307,27 @@ def edit_classroom(classroom_id):
         print(f"Error: {e}")
         return "Error al obtener datos de la clase", 500
 
+def get_ecs_container_id():
+    metadata_uri = os.environ.get('ECS_CONTAINER_METADATA_URI_V4') or os.environ.get('ECS_CONTAINER_METADATA_URI')
+    
+    if not metadata_uri:
+        return "Error: No metadata URI"
+
+    try:
+        response = requests.get(metadata_uri, timeout=2)
+        response.raise_for_status() # Lanza error si el status no es 200
+        return response.json().get('DockerId')
+    except Exception as e:
+        return f"Error: {e}"
+
 init_db() # Inicializar la base de datos al iniciar la aplicación
 
 if __name__ == '__main__':
+    import socket
     # Configuración segura del servidor usando variables de entorno
     host = os.getenv('FLASK_HOST', '0.0.0.0')
     port = int(os.getenv('FLASK_PORT', 80))
     debug = os.getenv('FLASK_DEBUG', 'False').lower() == 'true'
-    
+    container_id = socket.gethostname()
+    print(f"Starting Flask app in container: {container_id}")
     app.run(host=host, port=port, debug=debug)
