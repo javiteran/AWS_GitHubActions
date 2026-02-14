@@ -9,6 +9,12 @@ load_dotenv()
 
 app = Flask(__name__)
 
+# Función para inyectar variables en todas las plantillas
+@app.context_processor
+def inject_container_id():
+    import socket
+    return dict(container_id=socket.gethostname())
+
 # Database configuration usando variables de entorno. Recupera el valor del archivo .env y si no existe usa un valor por defecto.
 DB_CONFIG = {
     'host': os.getenv('DB_HOST', 'localhost'),
@@ -54,12 +60,9 @@ def get_db_connection():
 # Define routes and database queries here
 @app.route('/')
 def home():
-    import socket
-    container_id = socket.gethostname()
-    return render_template('index.html', 
+    return render_template('index.html',
         current_page='🏠 Home',
-        current_route='home',
-        container_id=container_id)
+        current_route='home')
 
 # Define the student table
 class Student:

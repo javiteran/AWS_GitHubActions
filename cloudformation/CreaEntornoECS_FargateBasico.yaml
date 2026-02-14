@@ -44,12 +44,12 @@ Parameters:
   
   CapacidadMin:
     Type: Number
-    Default: 1
+    Default: 2
     Description: Minimo numero de tareas para el autoescalado
   
   CapacidadMax:
     Type: Number
-    Default: 3
+    Default: 4
     Description: Maximo numero de tareas para el autoescalado
 
 Resources:
