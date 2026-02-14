@@ -99,7 +99,9 @@ Importante. En AWS Academy los ID, KEY y token de sesión (`AWS_ACCESS_KEY_ID`, 
 
 ## 📋 Comandos útiles
 
-### Crear el secreto de base de datos en AWS Secrets Manager
+### Crear el secreto de base de datos en AWS Secrets Manager 
+
+(se está creando automáticamente con CloudFormation, pero puedes usar este comando para pruebas o ajustes)
 
 ```bash
 aws secretsmanager create-secret \
