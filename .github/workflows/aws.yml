@@ -17,10 +17,10 @@ jobs:
       - name: 🔑 Configurar Credenciales AWS
         uses: aws-actions/configure-aws-credentials@v5.0.0
         with:
-          aws-region:             ${{ secrets.AWS_REGION }}              
-          aws-access-key-id:      ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-session-token:      ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region:             ${{ secrets.AWS_REGION }}             #Secreto de Github
+          aws-access-key-id:      ${{ secrets.AWS_ACCESS_KEY_ID }}      #Secreto de Github
+          aws-secret-access-key:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}  #Secreto de Github
+          aws-session-token:      ${{ secrets.AWS_SESSION_TOKEN }}      #Secreto de Github, si usas credenciales temporales. Si no, puedes omitir esta línea
       - name: 🧪 Test AWS credentials antes de configurar 
         run: |
           echo "Probando credenciales AWS..."
@@ -52,7 +52,7 @@ jobs:
       - name: ➡️ Build, tag, and push image to ECR. Elastic Container Registry
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_TAG: ${{ github.sha }} # Hash SHA del commit para versionar la imagen de forma única
         run: |
           docker build -t $ECR_REGISTRY/${{ vars.AWS_PROYECTO }}-repo:$IMAGE_TAG .
           docker push $ECR_REGISTRY/${{ vars.AWS_PROYECTO }}-repo:$IMAGE_TAG
@@ -60,12 +60,12 @@ jobs:
 
       - name: 📄 Preparar la Task Definition para ECS
         env:
-          AWS_PROYECTO: ${{ vars.AWS_PROYECTO }}
-          AWS_ACCOUNT_ID: ${{ steps.get-aws-info.outputs.account-id }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-          SECRET_ARN: ${{ steps.get-aws-info.outputs.secret-arn }}
+          AWS_PROYECTO: ${{ vars.AWS_PROYECTO }}                        #Variable de Github
+          AWS_REGION: ${{ secrets.AWS_REGION }}                         #Secreto de Github
+          AWS_ACCOUNT_ID: ${{ steps.get-aws-info.outputs.account-id }}  #Variable obtenida del paso anterior
+          SECRET_ARN: ${{ steps.get-aws-info.outputs.secret-arn }}      #Variable obtenida del paso anterior
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}         #Variable obtenida del paso de login a ECR
+          IMAGE_TAG: ${{ github.sha }}                                  # Hash SHA del commit para versionar la imagen de forma única
         run: |
           # Reemplazar variables y secretos en el archivo de definición de tarea
           sed "s|tu-repositorio-aws/tu-imagen:latest|$ECR_REGISTRY/${{ vars.AWS_PROYECTO }}-repo:$IMAGE_TAG|g" ecs-task-def.json > ecs-task-def-rendered.json          

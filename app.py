@@ -30,8 +30,8 @@ def get_db_connection():
 @app.route('/')
 def home():
     return render_template('index.html', 
-                         current_page='🏠 Home',
-                         current_route='home')
+        current_page='🏠 Home',
+        current_route='home')
 
 # Define the student table
 class Student:
@@ -61,9 +61,9 @@ def students():
         connection.close()
         print("Estudiantes: ", students)
         return render_template('students.html', 
-                             students=students,
-                             current_page='👥 Students List',
-                             current_route='students')
+            students=students,
+            current_page='👥 Students List',
+            current_route='students')
     except Error as e:
         print(f"Error: {e}")
         return "Error al obtener estudiantes", 500
@@ -82,9 +82,9 @@ def classrooms():
         print("Clases: ", classrooms)
         connection.close()
         return render_template('classrooms.html', 
-                             classrooms=classrooms,
-                             current_page='🏛️ Classrooms List',
-                             current_route='classrooms')
+            classrooms=classrooms,
+            current_page='🏛️ Classrooms List',
+            current_route='classrooms')
     except Error as e:
         print(f"Error: {e}")
         return "Error al obtener clases", 500
@@ -109,15 +109,15 @@ def add_student():
             cur.close()
             connection.close()
             return render_template('success.html', 
-                                 title='Student Added Successfully! 🎉',
-                                 message=f'Student {name} {surname} has been added to class {nameclass} with note {note}.',
-                                 action_type='student')
+                title='Student Added Successfully! 🎉',
+                message=f'Student {name} {surname} has been added to class {nameclass} with note {note}.',
+                action_type='student')
         except Error as e:
             print(f"Error: {e}")
             return "Error al agregar estudiante", 500
     return render_template('add_student.html',
-                         current_page='➕ Add Student',
-                         current_route='add_student')
+            current_page='➕ Add Student',
+            current_route='add_student')
 
 @app.route('/add_classroom', methods=['GET', 'POST'])
 def add_classroom():
@@ -137,15 +137,15 @@ def add_classroom():
             cur.close()
             connection.close()
             return render_template('success.html',
-                                 title='Classroom Added Successfully! 🏫',
-                                 message=f'Classroom {nameclass} for course {course} has been created successfully.',
-                                 action_type='classroom')
+                title='Classroom Added Successfully! 🏫',
+                message=f'Classroom {nameclass} for course {course} has been created successfully.',
+                action_type='classroom')
         except Error as e:
             print(f"Error: {e}")
             return "Error al agregar clase", 500
     return render_template('add_classroom.html',
-                         current_page='🏫 Add Classroom',
-                         current_route='add_classroom')
+            current_page='🏫 Add Classroom',
+            current_route='add_classroom')
 
 # Rutas para borrar registros
 @app.route('/delete_student/<int:student_id>')
@@ -161,9 +161,9 @@ def delete_student(student_id):
         cur.close()
         connection.close()
         return render_template('success.html',
-                             title='Student Deleted Successfully! 🗑️',
-                             message=f'The student has been removed from the system.',
-                             action_type='student')
+            title='Student Deleted Successfully! 🗑️',
+            message=f'The student has been removed from the system.',
+            action_type='student')
     except Error as e:
         print(f"Error: {e}")
         return "Error al eliminar estudiante", 500
@@ -181,9 +181,9 @@ def delete_classroom(classroom_id):
         cur.close()
         connection.close()
         return render_template('success.html',
-                             title='Classroom Deleted Successfully! 🗑️',
-                             message=f'The classroom has been removed from the system.',
-                             action_type='classroom')
+            title='Classroom Deleted Successfully! 🗑️',
+            message=f'The classroom has been removed from the system.',
+            action_type='classroom')
     except Error as e:
         print(f"Error: {e}")
         return "Error al eliminar clase", 500
@@ -204,14 +204,14 @@ def edit_student(student_id):
         try:
             cur = connection.cursor()
             cur.execute("UPDATE student SET name=%s, surname=%s, nameclass=%s, note=%s WHERE id=%s", 
-                       (name, surname, nameclass, note, student_id))
+                (name, surname, nameclass, note, student_id))
             connection.commit()
             cur.close()
             connection.close()
             return render_template('success.html',
-                                 title='Student Updated Successfully! ✏️',
-                                 message=f'Student {name} {surname} has been updated successfully.',
-                                 action_type='student')
+                title='Student Updated Successfully! ✏️',
+                message=f'Student {name} {surname} has been updated successfully.',
+                action_type='student')
         except Error as e:
             print(f"Error: {e}")
             return "Error al actualizar estudiante", 500
@@ -226,9 +226,9 @@ def edit_student(student_id):
         
         if student:
             return render_template('edit_student.html', 
-                                 student=student,
-                                 current_page=f'✏️ Edit Student: {student["name"]} {student["surname"]}',
-                                 current_route='edit_student')
+                student=student,
+                current_page=f'✏️ Edit Student: {student["name"]} {student["surname"]}',
+                current_route='edit_student')
         else:
             return "Estudiante no encontrado", 404
     except Error as e:
@@ -248,14 +248,14 @@ def edit_classroom(classroom_id):
         try:
             cur = connection.cursor()
             cur.execute("UPDATE classroom SET nameclass=%s, course=%s WHERE id=%s", 
-                       (nameclass, course, classroom_id))
+                (nameclass, course, classroom_id))
             connection.commit()
             cur.close()
             connection.close()
             return render_template('success.html',
-                                 title='Classroom Updated Successfully! ✏️',
-                                 message=f'Classroom {nameclass} has been updated successfully.',
-                                 action_type='classroom')
+                title='Classroom Updated Successfully! ✏️',
+                message=f'Classroom {nameclass} has been updated successfully.',
+                action_type='classroom')
         except Error as e:
             print(f"Error: {e}")
             return "Error al actualizar clase", 500
@@ -270,9 +270,9 @@ def edit_classroom(classroom_id):
         
         if classroom:
             return render_template('edit_classroom.html', 
-                                 classroom=classroom,
-                                 current_page=f'✏️ Edit Classroom: {classroom["nameclass"]}',
-                                 current_route='edit_classroom')
+                classroom=classroom,
+                current_page=f'✏️ Edit Classroom: {classroom["nameclass"]}',
+                current_route='edit_classroom')
         else:
             return "Clase no encontrada", 404
     except Error as e:
