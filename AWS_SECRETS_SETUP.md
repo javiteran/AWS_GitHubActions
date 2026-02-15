@@ -73,6 +73,8 @@ Debe contener las siguientes claves:
 
 ### Crear el secreto (si no existe)
 
+Los secretos se están creando con la plantilla de CloudFormation, pero si necesitas crear uno manualmente, puedes usar este comando:
+
 ```bash
 aws secretsmanager create-secret \
   --name secretos-despliegue-aws \
