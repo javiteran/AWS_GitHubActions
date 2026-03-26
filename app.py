@@ -323,7 +323,9 @@ def get_ecs_container_id():
     except Exception as e:
         return f"Error: {e}"
 
-init_db() # Inicializar la base de datos al iniciar la aplicación
+# Inicializar la base de datos solo si no estamos en modo testing
+if not app.config.get('TESTING'):
+    init_db()
 
 if __name__ == '__main__':
     import socket

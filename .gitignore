@@ -13,9 +13,30 @@ __pycache__/
 # Instancia Flask
 instance/
 
+# Entornos virtuales
+.venv
+venv/
+env/
+
 # Archivos de logs
 *.log
 logs/
+
+# Testing y coverage
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+*.cover
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# AWS
+.aws/
+credentials
 
 # Base de datos
 *.db
