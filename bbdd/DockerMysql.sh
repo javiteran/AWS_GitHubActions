@@ -4,6 +4,9 @@ docker run -d --name mysqlalumnosclases -p 3306:3306 -e MYSQL_ROOT_PASSWORD=pass
 #Verificar si está el docker funcionando
 # docker exec -it mysqlalumnosclases bash
 
+apt update -y
+apt install mysql-client -y
+
 # Conectarme al mysql
 sudo mysql -u root -ppassword -P 3306 -h 0.0.0.0
 
@@ -18,3 +21,5 @@ mysql -u usuario -ppassword -h 0.0.0.0
 
 # Crear las tablase de la bases de datos
 mysql -u usuario -ppassword -h 0.0.0.0 AlumnosClases < database.sql
+
+# La aplicación crea las tablas de la base de datos si no están creadas.
