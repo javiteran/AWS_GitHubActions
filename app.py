@@ -6,6 +6,10 @@ import json
 from urllib import request as urlrequest
 from dotenv import load_dotenv
 import werkzeug
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Cargar variables de entorno desde el archivo .env
 load_dotenv()
@@ -48,7 +52,7 @@ def init_db():
         cursor.execute("SHOW TABLES LIKE 'student'")
         result = cursor.fetchone()
         if not result:
-            print("Inicializando base de datos...")
+            logger.info("Inicializando base de datos...")
             try:
                 with open('bbdd/database.sql', 'r') as f:
                     sql_script = f.read()
@@ -57,11 +61,12 @@ def init_db():
                     if statement.strip():
                         cursor.execute(statement)
                 connection.commit()
-                print("Base de datos inicializada correctamente.")
+                logger.info("Base de datos inicializada correctamente.")
             except Exception as e:
-                print(f"Error cargando SQL: {e}")
+                connection.rollback()
+                logger.error(f"Error cargando SQL: {e}")
     except Error as e:
-        print(f"Error inicializando BD: {e}")
+        logger.error(f"Error inicializando BD: {e}")
     finally:
         close_db_resources(connection, cursor)
 
@@ -70,7 +75,7 @@ def get_db_connection():
         connection = mysql.connector.connect(**get_db_config())
         return connection
     except Error as e:
-        print(f"Error connecting to MySQL: {e}")
+        logger.error(f"Error connecting to MySQL: {e}")
         return None
 
 # Define routes and database queries here
@@ -105,13 +110,13 @@ def students():
         cur = connection.cursor(dictionary=True)
         cur.execute('SELECT * FROM student')
         students = cur.fetchall()
-        print("Estudiantes: ", students)
+        #print("Estudiantes: ", students)
         return render_template('students.html', 
             students=students,
             current_page='👥 Students List',
             current_route='students')
     except Exception as e:
-        print(f"Error: {e}")
+        logger.error(f"Error al obtener estudiantes: {e}")
         return "Error al obtener estudiantes", 500
     finally:
         close_db_resources(connection, cur)
@@ -127,13 +132,12 @@ def classrooms():
         cur = connection.cursor(dictionary=True)
         cur.execute('SELECT * FROM classroom')
         classrooms = cur.fetchall()
-        print("Clases: ", classrooms)
         return render_template('classrooms.html', 
             classrooms=classrooms,
             current_page='🏛️ Classrooms List',
             current_route='classrooms')
     except Exception as e:
-        print(f"Error: {e}")
+        logger.error(f"Error al obtener clases: {e}")
         return "Error al obtener clases", 500
     finally:
         close_db_resources(connection, cur)
@@ -161,7 +165,8 @@ def add_student():
                 message=f'Student {name} {surname} has been added to class {nameclass} with note {note}.',
                 action_type='student')
         except Exception as e:
-            print(f"Error: {e}")
+            connection.rollback()
+            logger.error(f"Error al agregar estudiante: {e}")
             return "Error al agregar estudiante", 500
         finally:
             close_db_resources(connection, cur)
@@ -190,7 +195,8 @@ def add_classroom():
                 message=f'Classroom {nameclass} for course {course} has been created successfully.',
                 action_type='classroom')
         except Exception as e:
-            print(f"Error: {e}")
+            connection.rollback()
+            logger.error(f"Error al agregar clase: {e}")
             return "Error al agregar clase", 500
         finally:
             close_db_resources(connection, cur)
@@ -215,7 +221,8 @@ def delete_student(student_id):
             message=f'The student has been removed from the system.',
             action_type='student')
     except Exception as e:
-        print(f"Error: {e}")
+        connection.rollback()
+        logger.error(f"Error al eliminar estudiante: {e}")
         return "Error al eliminar estudiante", 500
     finally:
         close_db_resources(connection, cur)
@@ -236,7 +243,8 @@ def delete_classroom(classroom_id):
             message=f'The classroom has been removed from the system.',
             action_type='classroom')
     except Exception as e:
-        print(f"Error: {e}")
+        connection.rollback()
+        logger.error(f"Error al eliminar clase: {e}")
         return "Error al eliminar clase", 500
     finally:
         close_db_resources(connection, cur)
@@ -265,7 +273,8 @@ def edit_student(student_id):
                 message=f'Student {name} {surname} has been updated successfully.',
                 action_type='student')
         except Exception as e:
-            print(f"Error: {e}")
+            connection.rollback()
+            logger.error(f"Error al actualizar estudiante: {e}")
             return "Error al actualizar estudiante", 500
         finally:
             close_db_resources(connection, cur)
@@ -284,7 +293,7 @@ def edit_student(student_id):
         else:
             return "Estudiante no encontrado", 404
     except Exception as e:
-        print(f"Error: {e}")
+        logger.error(f"Error al obtener datos del estudiante: {e}")
         return "Error al obtener datos del estudiante", 500
     finally:
         close_db_resources(connection, cur)
@@ -310,7 +319,8 @@ def edit_classroom(classroom_id):
                 message=f'Classroom {nameclass} has been updated successfully.',
                 action_type='classroom')
         except Exception as e:
-            print(f"Error: {e}")
+            connection.rollback()
+            logger.error(f"Error al actualizar clase: {e}")
             return "Error al actualizar clase", 500
         finally:
             close_db_resources(connection, cur)
@@ -329,7 +339,7 @@ def edit_classroom(classroom_id):
         else:
             return "Clase no encontrada", 404
     except Exception as e:
-        print(f"Error: {e}")
+        logger.error(f"Error al obtener datos de la clase: {e}")
         return "Error al obtener datos de la clase", 500
     finally:
         close_db_resources(connection, cur)
@@ -358,5 +368,5 @@ if __name__ == '__main__':
     port = int(os.getenv('FLASK_PORT', 80))
     debug = os.getenv('FLASK_DEBUG', 'False').lower() == 'true'
     container_id = socket.gethostname()
-    print(f"Starting Flask app in container: {container_id}")
+    logger.info(f"Starting Flask app in container: {container_id}")
     app.run(host=host, port=port, debug=debug)
