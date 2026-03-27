@@ -89,8 +89,9 @@ Prueban todos los endpoints HTTP de la aplicación.
 | `/delete_classroom/<id>` | GET | 1 |
 | `/edit_student/<id>` | GET/POST | 3 |
 | `/edit_classroom/<id>` | GET/POST | 2 |
+| `/set_language/<lang>` | GET | - |
 
-**Total Tests**: **22**
+**Total Tests**: **21**
 
 ```python
 ✅ test_home_route_get()                # GET / → 200
@@ -140,7 +141,7 @@ Validan que los errores se manejan correctamente.
 
 ```
 pytest==7.4.0              # Framework de testing
-pytest-flask==1.2.0        # Integración Flask + pytest
+pytest-flask==1.3.0        # Integración Flask + pytest (Flask 3.x compat)
 pytest-cov==4.1.0          # Medición de cobertura
 pytest-mock==3.11.1        # Mock simplificado
 ```
@@ -195,11 +196,11 @@ pytest -x
 | Métrica | Target | Status |
 |---------|--------|--------|
 | Cobertura General | 80%+ | ✅ Implementado |
-| Tests Unitarios | 30+ | ✅ 12 tests |
-| Tests Integración | 10+ | ✅ 9 tests |
-| Tests Funcionales | 20+ | ✅ 22 tests |
+| Tests Unitarios | 10+ | ✅ 8 tests |
+| Tests Integración | 8+ | ✅ 8 tests |
+| Tests Funcionales | 20+ | ✅ 21 tests |
 | Tests Error Handling | 12+ | ✅ 12 tests |
-| **Total Tests** | **70+** | ✅ **55 tests** |
+| **Total Tests** | **40+** | ✅ **49 tests** |
 
 ---
 
@@ -213,7 +214,7 @@ Se ejecuta automáticamente en:
 
 ### Pasos:
 1. ✅ Checkout del código
-2. ✅ Setup Python (3.9, 3.11)
+2. ✅ Setup Python (3.13.7)
 3. ✅ Instalación de dependencias
 4. ✅ Ejecución de tests
 5. ✅ Generación de cobertura
@@ -226,7 +227,7 @@ Se ejecuta automáticamente en:
 
 ### Inmediatas (Prioridad Alta):
 - [ ] Agregar validación de entrada en formularios (`request.form` validation)
-- [ ] Implementar logging para debugging
+- [x] Implementar logging para debugging
 - [ ] Agregar tests de seguridad (CSRF, headers)
 
 ### Corto Plazo:
@@ -279,11 +280,11 @@ Se ejecuta automáticamente en:
 ## 📚 Referencias
 
 - [Pytest Documentation](https://docs.pytest.org/)
-- [Flask Testing](https://flask.palletsprojects.com/en/2.3.x/testing/)
+- [Flask Testing](https://flask.palletsprojects.com/en/3.1.x/testing/)
 - [Coverage.py](https://coverage.readthedocs.io/)
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
 
 ---
 
-**Última actualización**: 24 de marzo de 2026  
-**Versión del Plan**: 1.0
+**Última actualización**: 27 de marzo de 2026  
+**Versión del Plan**: 1.1
