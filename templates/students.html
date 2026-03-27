@@ -3,7 +3,7 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 
 <head>
-    <title>Student List</title>
+    <title>{{ _('Student List') }}</title>
 </head>
 <body>
     {% include 'menu.html' %}
@@ -12,11 +12,11 @@
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Name</th>
-                    <th>Surname</th>
-                    <th>Class</th>
-                    <th>Note</th>
-                    <th>Actions</th>
+                    <th>{{ _('Name') }}</th>
+                    <th>{{ _('Surname') }}</th>
+                    <th>{{ _('Class') }}</th>
+                    <th>{{ _('Note') }}</th>
+                    <th>{{ _('Actions') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -28,11 +28,11 @@
                     <td>{{ student.nameclass }}</td>
                     <td><span class="grade-badge">{{ student.note }}</span></td>
                     <td class="actions-cell">
-                        <a href="/edit_student/{{ student.id }}" class="btn-edit" title="Edit Student">
+                        <a href="/edit_student/{{ student.id }}" class="btn-edit" title="{{ _('Edit Student') }}">
                             ✏️
                         </a>
-                        <a href="/delete_student/{{ student.id }}" class="btn-delete" title="Delete Student" 
-                           onclick="return confirm('Are you sure you want to delete {{ student.name }} {{ student.surname }}?')">
+                        <a href="/delete_student/{{ student.id }}" class="btn-delete" title="{{ _('Delete Student') }}" 
+                           onclick="return confirm('{{ _('Are you sure you want to delete %(name)s %(surname)s?', name=student.name, surname=student.surname) }}')">
                             🗑️
                         </a>
                     </td>

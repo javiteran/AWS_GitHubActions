@@ -1,0 +1,247 @@
+# Spanish translations for AWS_GitHubActions
+msgid ""
+msgstr ""
+"Project-Id-Version: AWS_GitHubActions 1.0\n"
+"POT-Creation-Date: 2026-03-27 00:00+0000\n"
+"PO-Revision-Date: 2026-03-27 00:00+0000\n"
+"Language-Team: Spanish\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# --- Navegación ---
+msgid "School System"
+msgstr "Sistema Escolar"
+
+msgid "List Students"
+msgstr "Lista de Estudiantes"
+
+msgid "List Classrooms"
+msgstr "Lista de Clases"
+
+msgid "Add Student"
+msgstr "Añadir Estudiante"
+
+msgid "Add Classroom"
+msgstr "Añadir Clase"
+
+# --- Páginas: current_page ---
+msgid "🏠 Home"
+msgstr "🏠 Inicio"
+
+msgid "👥 Students List"
+msgstr "👥 Lista de Estudiantes"
+
+msgid "🏛️ Classrooms List"
+msgstr "🏛️ Lista de Clases"
+
+msgid "➕ Add Student"
+msgstr "➕ Añadir Estudiante"
+
+msgid "🏫 Add Classroom"
+msgstr "🏫 Añadir Clase"
+
+msgid "✏️ Edit Student: %(name)s %(surname)s"
+msgstr "✏️ Editar Estudiante: %(name)s %(surname)s"
+
+msgid "✏️ Edit Classroom: %(nameclass)s"
+msgstr "✏️ Editar Clase: %(nameclass)s"
+
+# --- Tabla Estudiantes ---
+msgid "Student List"
+msgstr "Lista de Estudiantes"
+
+msgid "Name"
+msgstr "Nombre"
+
+msgid "Surname"
+msgstr "Apellido"
+
+msgid "Class"
+msgstr "Clase"
+
+msgid "Note"
+msgstr "Nota"
+
+msgid "Actions"
+msgstr "Acciones"
+
+msgid "Edit Student"
+msgstr "Editar Estudiante"
+
+msgid "Delete Student"
+msgstr "Eliminar Estudiante"
+
+msgid "Are you sure you want to delete %(name)s %(surname)s?"
+msgstr "¿Está seguro de que desea eliminar a %(name)s %(surname)s?"
+
+# --- Tabla Clases ---
+msgid "Classroom List"
+msgstr "Lista de Clases"
+
+msgid "Class Name"
+msgstr "Nombre de Clase"
+
+msgid "Course"
+msgstr "Curso"
+
+msgid "Edit Classroom"
+msgstr "Editar Clase"
+
+msgid "Delete Classroom"
+msgstr "Eliminar Clase"
+
+msgid "Are you sure you want to delete classroom %(name)s?"
+msgstr "¿Está seguro de que desea eliminar la clase %(name)s?"
+
+# --- Formulario Añadir/Editar Estudiante ---
+msgid "Add New Student"
+msgstr "Añadir Nuevo Estudiante"
+
+msgid "Fill in the student information below"
+msgstr "Complete la información del estudiante"
+
+msgid "First Name"
+msgstr "Nombre"
+
+msgid "Enter first name"
+msgstr "Ingrese el nombre"
+
+msgid "Enter surname"
+msgstr "Ingrese el apellido"
+
+msgid "e.g., 1A, 2B"
+msgstr "ej., 1A, 2B"
+
+msgid "Grade/Note"
+msgstr "Nota"
+
+msgid "Update Student"
+msgstr "Actualizar Estudiante"
+
+msgid "Edit Student"
+msgstr "Editar Estudiante"
+
+msgid "Update the student information below"
+msgstr "Actualice la información del estudiante"
+
+# --- Formulario Añadir/Editar Clase ---
+msgid "Add New Classroom"
+msgstr "Añadir Nueva Clase"
+
+msgid "Create a new classroom for the school"
+msgstr "Crear una nueva clase para la escuela"
+
+msgid "e.g., 1A, 2B, 3C"
+msgstr "ej., 1A, 2B, 3C"
+
+msgid "e.g., Mathematics, Science"
+msgstr "ej., Matemáticas, Ciencias"
+
+msgid "Update Classroom"
+msgstr "Actualizar Clase"
+
+msgid "Edit Classroom"
+msgstr "Editar Clase"
+
+msgid "Update the classroom information below"
+msgstr "Actualice la información de la clase"
+
+# --- Botones comunes ---
+msgid "Cancel"
+msgstr "Cancelar"
+
+# --- Página de éxito ---
+msgid "View All Students"
+msgstr "Ver Todos los Estudiantes"
+
+msgid "Add Another Student"
+msgstr "Añadir Otro Estudiante"
+
+msgid "View All Classrooms"
+msgstr "Ver Todas las Clases"
+
+msgid "Add Another Classroom"
+msgstr "Añadir Otra Clase"
+
+msgid "Go Home"
+msgstr "Inicio"
+
+# --- Mensajes de éxito dinámicos ---
+msgid "Student Added Successfully! 🎉"
+msgstr "¡Estudiante Añadido Correctamente! 🎉"
+
+msgid "Student %(name)s %(surname)s has been added to class %(nameclass)s with note %(note)s."
+msgstr "El estudiante %(name)s %(surname)s ha sido añadido a la clase %(nameclass)s con nota %(note)s."
+
+msgid "Classroom Added Successfully! 🏫"
+msgstr "¡Clase Añadida Correctamente! 🏫"
+
+msgid "Classroom %(nameclass)s for course %(course)s has been created successfully."
+msgstr "La clase %(nameclass)s para el curso %(course)s ha sido creada correctamente."
+
+msgid "Student Deleted Successfully! 🗑️"
+msgstr "¡Estudiante Eliminado Correctamente! 🗑️"
+
+msgid "The student has been removed from the system."
+msgstr "El estudiante ha sido eliminado del sistema."
+
+msgid "Classroom Deleted Successfully! 🗑️"
+msgstr "¡Clase Eliminada Correctamente! 🗑️"
+
+msgid "The classroom has been removed from the system."
+msgstr "La clase ha sido eliminada del sistema."
+
+msgid "Student Updated Successfully! ✏️"
+msgstr "¡Estudiante Actualizado Correctamente! ✏️"
+
+msgid "Student %(name)s %(surname)s has been updated successfully."
+msgstr "El estudiante %(name)s %(surname)s ha sido actualizado correctamente."
+
+msgid "Classroom Updated Successfully! ✏️"
+msgstr "¡Clase Actualizada Correctamente! ✏️"
+
+msgid "Classroom %(nameclass)s has been updated successfully."
+msgstr "La clase %(nameclass)s ha sido actualizada correctamente."
+
+# --- Errores de usuario ---
+msgid "Database connection error"
+msgstr "Error de conexión a la base de datos"
+
+msgid "Error retrieving students"
+msgstr "Error al obtener estudiantes"
+
+msgid "Error retrieving classrooms"
+msgstr "Error al obtener clases"
+
+msgid "Error adding student"
+msgstr "Error al agregar estudiante"
+
+msgid "Error adding classroom"
+msgstr "Error al agregar clase"
+
+msgid "Error deleting student"
+msgstr "Error al eliminar estudiante"
+
+msgid "Error deleting classroom"
+msgstr "Error al eliminar clase"
+
+msgid "Error updating student"
+msgstr "Error al actualizar estudiante"
+
+msgid "Error retrieving student data"
+msgstr "Error al obtener datos del estudiante"
+
+msgid "Student not found"
+msgstr "Estudiante no encontrado"
+
+msgid "Error updating classroom"
+msgstr "Error al actualizar clase"
+
+msgid "Error retrieving classroom data"
+msgstr "Error al obtener datos de la clase"
+
+msgid "Classroom not found"
+msgstr "Clase no encontrada"

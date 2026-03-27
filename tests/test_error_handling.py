@@ -20,7 +20,7 @@ class TestErrorHandling:
         response = client.get('/students')
         
         assert response.status_code == 500
-        assert b'Error' in response.data
+        assert b'error' in response.data.lower()
     
     @patch('app.get_db_connection')
     def test_malformed_student_id(self, mock_get_conn, client):

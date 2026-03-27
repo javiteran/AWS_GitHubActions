@@ -1,11 +1,11 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, make_response
 import mysql.connector
 from mysql.connector import Error
 import os
 import json
 from urllib import request as urlrequest
 from dotenv import load_dotenv
-import werkzeug
+from flask_babel import Babel, _
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -16,14 +16,23 @@ load_dotenv()
 
 app = Flask(__name__)
 
-if not hasattr(werkzeug, '__version__'):
-    werkzeug.__version__ = '3'
+babel = Babel()
+
+def get_locale():
+    lang = request.cookies.get('lang')
+    if lang in ['es', 'en']:
+        return lang
+    return request.accept_languages.best_match(['es', 'en'], default='en')
+
+babel.init_app(app, locale_selector=get_locale)
 
 # Función para inyectar variables en todas las plantillas
 @app.context_processor
 def inject_container_id():
     import socket
-    return dict(container_id=socket.gethostname())
+    from flask_babel import get_locale as babel_get_locale
+    locale = babel_get_locale()
+    return dict(container_id=socket.gethostname(), current_locale=str(locale) if locale else 'en')
 
 def get_db_config():
     return {
@@ -78,11 +87,21 @@ def get_db_connection():
         logger.error(f"Error connecting to MySQL: {e}")
         return None
 
+@app.route('/set_language/<lang>')
+def set_language(lang):
+    if lang not in ['es', 'en']:
+        lang = 'en'
+    referrer = request.referrer
+    redirect_url = referrer if (referrer and referrer.startswith(request.url_root)) else '/'
+    response = make_response(redirect(redirect_url))
+    response.set_cookie('lang', lang, max_age=60*60*24*30, httponly=True, samesite='Lax')
+    return response
+
 # Define routes and database queries here
 @app.route('/')
 def home():
     return render_template('index.html',
-        current_page='🏠 Home',
+        current_page=_('🏠 Home'),
         current_route='home')
 
 # Define the student table
@@ -103,21 +122,20 @@ class Classroom:
 def students():
     connection = get_db_connection()
     if connection is None:
-        return "Error de conexión a la base de datos", 500
+        return _('Database connection error'), 500
 
     cur = None
     try:
         cur = connection.cursor(dictionary=True)
         cur.execute('SELECT * FROM student')
         students = cur.fetchall()
-        #print("Estudiantes: ", students)
         return render_template('students.html', 
             students=students,
-            current_page='👥 Students List',
+            current_page=_('👥 Students List'),
             current_route='students')
     except Exception as e:
         logger.error(f"Error al obtener estudiantes: {e}")
-        return "Error al obtener estudiantes", 500
+        return _('Error retrieving students'), 500
     finally:
         close_db_resources(connection, cur)
 
@@ -125,7 +143,7 @@ def students():
 def classrooms():
     connection = get_db_connection()
     if connection is None:
-        return "Error de conexión a la base de datos", 500
+        return _('Database connection error'), 500
 
     cur = None
     try:
@@ -134,11 +152,11 @@ def classrooms():
         classrooms = cur.fetchall()
         return render_template('classrooms.html', 
             classrooms=classrooms,
-            current_page='🏛️ Classrooms List',
+            current_page=_('🏛️ Classrooms List'),
             current_route='classrooms')
     except Exception as e:
         logger.error(f"Error al obtener clases: {e}")
-        return "Error al obtener clases", 500
+        return _('Error retrieving classrooms'), 500
     finally:
         close_db_resources(connection, cur)
 
@@ -153,7 +171,7 @@ def add_student():
         
         connection = get_db_connection()
         if connection is None:
-            return "Error de conexión a la base de datos", 500
+            return _('Database connection error'), 500
 
         cur = None
         try:
@@ -161,17 +179,17 @@ def add_student():
             cur.execute("INSERT INTO student (name, surname, nameclass, note) VALUES (%s, %s, %s, %s)", (student.name, student.surname, student.nameclass, student.note))
             connection.commit()
             return render_template('success.html', 
-                title='Student Added Successfully! 🎉',
-                message=f'Student {name} {surname} has been added to class {nameclass} with note {note}.',
+                title=_('Student Added Successfully! 🎉'),
+                message=_('Student %(name)s %(surname)s has been added to class %(nameclass)s with note %(note)s.', name=name, surname=surname, nameclass=nameclass, note=note),
                 action_type='student')
         except Exception as e:
             connection.rollback()
             logger.error(f"Error al agregar estudiante: {e}")
-            return "Error al agregar estudiante", 500
+            return _('Error adding student'), 500
         finally:
             close_db_resources(connection, cur)
     return render_template('add_student.html',
-            current_page='➕ Add Student',
+            current_page=_('➕ Add Student'),
             current_route='add_student')
 
 @app.route('/add_classroom', methods=['GET', 'POST'])
@@ -183,7 +201,7 @@ def add_classroom():
         
         connection = get_db_connection()
         if connection is None:
-            return "Error de conexión a la base de datos", 500
+            return _('Database connection error'), 500
 
         cur = None
         try:
@@ -191,17 +209,17 @@ def add_classroom():
             cur.execute("INSERT INTO classroom (nameclass, course) VALUES (%s, %s)", (classroom.nameclass, classroom.course))
             connection.commit()
             return render_template('success.html',
-                title='Classroom Added Successfully! 🏫',
-                message=f'Classroom {nameclass} for course {course} has been created successfully.',
+                title=_('Classroom Added Successfully! 🏫'),
+                message=_('Classroom %(nameclass)s for course %(course)s has been created successfully.', nameclass=nameclass, course=course),
                 action_type='classroom')
         except Exception as e:
             connection.rollback()
             logger.error(f"Error al agregar clase: {e}")
-            return "Error al agregar clase", 500
+            return _('Error adding classroom'), 500
         finally:
             close_db_resources(connection, cur)
     return render_template('add_classroom.html',
-            current_page='🏫 Add Classroom',
+            current_page=_('🏫 Add Classroom'),
             current_route='add_classroom')
 
 # Rutas para borrar registros
@@ -209,7 +227,7 @@ def add_classroom():
 def delete_student(student_id):
     connection = get_db_connection()
     if connection is None:
-        return "Error de conexión a la base de datos", 500
+        return _('Database connection error'), 500
 
     cur = None
     try:
@@ -217,13 +235,13 @@ def delete_student(student_id):
         cur.execute("DELETE FROM student WHERE id = %s", (student_id,))
         connection.commit()
         return render_template('success.html',
-            title='Student Deleted Successfully! 🗑️',
-            message=f'The student has been removed from the system.',
+            title=_('Student Deleted Successfully! 🗑️'),
+            message=_('The student has been removed from the system.'),
             action_type='student')
     except Exception as e:
         connection.rollback()
         logger.error(f"Error al eliminar estudiante: {e}")
-        return "Error al eliminar estudiante", 500
+        return _('Error deleting student'), 500
     finally:
         close_db_resources(connection, cur)
 
@@ -231,7 +249,7 @@ def delete_student(student_id):
 def delete_classroom(classroom_id):
     connection = get_db_connection()
     if connection is None:
-        return "Error de conexión a la base de datos", 500
+        return _('Database connection error'), 500
 
     cur = None
     try:
@@ -239,13 +257,13 @@ def delete_classroom(classroom_id):
         cur.execute("DELETE FROM classroom WHERE id = %s", (classroom_id,))
         connection.commit()
         return render_template('success.html',
-            title='Classroom Deleted Successfully! 🗑️',
-            message=f'The classroom has been removed from the system.',
+            title=_('Classroom Deleted Successfully! 🗑️'),
+            message=_('The classroom has been removed from the system.'),
             action_type='classroom')
     except Exception as e:
         connection.rollback()
         logger.error(f"Error al eliminar clase: {e}")
-        return "Error al eliminar clase", 500
+        return _('Error deleting classroom'), 500
     finally:
         close_db_resources(connection, cur)
 
@@ -254,7 +272,7 @@ def delete_classroom(classroom_id):
 def edit_student(student_id):
     connection = get_db_connection()
     if connection is None:
-        return "Error de conexión a la base de datos", 500
+        return _('Database connection error'), 500
 
     cur = None
     if request.method == 'POST':
@@ -269,13 +287,13 @@ def edit_student(student_id):
                 (name, surname, nameclass, note, student_id))
             connection.commit()
             return render_template('success.html',
-                title='Student Updated Successfully! ✏️',
-                message=f'Student {name} {surname} has been updated successfully.',
+                title=_('Student Updated Successfully! ✏️'),
+                message=_('Student %(name)s %(surname)s has been updated successfully.', name=name, surname=surname),
                 action_type='student')
         except Exception as e:
             connection.rollback()
             logger.error(f"Error al actualizar estudiante: {e}")
-            return "Error al actualizar estudiante", 500
+            return _('Error updating student'), 500
         finally:
             close_db_resources(connection, cur)
     
@@ -288,13 +306,13 @@ def edit_student(student_id):
         if student:
             return render_template('edit_student.html', 
                 student=student,
-                current_page=f'✏️ Edit Student: {student["name"]} {student["surname"]}',
+                current_page=_('✏️ Edit Student: %(name)s %(surname)s', name=student['name'], surname=student['surname']),
                 current_route='edit_student')
         else:
-            return "Estudiante no encontrado", 404
+            return _('Student not found'), 404
     except Exception as e:
         logger.error(f"Error al obtener datos del estudiante: {e}")
-        return "Error al obtener datos del estudiante", 500
+        return _('Error retrieving student data'), 500
     finally:
         close_db_resources(connection, cur)
 
@@ -302,7 +320,7 @@ def edit_student(student_id):
 def edit_classroom(classroom_id):
     connection = get_db_connection()
     if connection is None:
-        return "Error de conexión a la base de datos", 500
+        return _('Database connection error'), 500
 
     cur = None
     if request.method == 'POST':
@@ -315,13 +333,13 @@ def edit_classroom(classroom_id):
                 (nameclass, course, classroom_id))
             connection.commit()
             return render_template('success.html',
-                title='Classroom Updated Successfully! ✏️',
-                message=f'Classroom {nameclass} has been updated successfully.',
+                title=_('Classroom Updated Successfully! ✏️'),
+                message=_('Classroom %(nameclass)s has been updated successfully.', nameclass=nameclass),
                 action_type='classroom')
         except Exception as e:
             connection.rollback()
             logger.error(f"Error al actualizar clase: {e}")
-            return "Error al actualizar clase", 500
+            return _('Error updating classroom'), 500
         finally:
             close_db_resources(connection, cur)
     
@@ -334,13 +352,13 @@ def edit_classroom(classroom_id):
         if classroom:
             return render_template('edit_classroom.html', 
                 classroom=classroom,
-                current_page=f'✏️ Edit Classroom: {classroom["nameclass"]}',
+                current_page=_('✏️ Edit Classroom: %(nameclass)s', nameclass=classroom['nameclass']),
                 current_route='edit_classroom')
         else:
-            return "Clase no encontrada", 404
+            return _('Classroom not found'), 404
     except Exception as e:
         logger.error(f"Error al obtener datos de la clase: {e}")
-        return "Error al obtener datos de la clase", 500
+        return _('Error retrieving classroom data'), 500
     finally:
         close_db_resources(connection, cur)
 
