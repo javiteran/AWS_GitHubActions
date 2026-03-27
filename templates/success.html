@@ -13,13 +13,13 @@
             <p>{{ message }}</p>
             <div class="action-buttons">
                 {% if action_type == 'student' %}
-                    <a href="/students" class="btn-primary">📋 View All Students</a>
-                    <a href="/add_student" class="btn-secondary">➕ Add Another Student</a>
+                    <a href="/students" class="btn-primary">📋 {{ _('View All Students') }}</a>
+                    <a href="/add_student" class="btn-secondary">➕ {{ _('Add Another Student') }}</a>
                 {% elif action_type == 'classroom' %}
-                    <a href="/classrooms" class="btn-primary">📋 View All Classrooms</a>
-                    <a href="/add_classroom" class="btn-secondary">➕ Add Another Classroom</a>
+                    <a href="/classrooms" class="btn-primary">📋 {{ _('View All Classrooms') }}</a>
+                    <a href="/add_classroom" class="btn-secondary">➕ {{ _('Add Another Classroom') }}</a>
                 {% endif %}
-                <a href="/" class="btn-tertiary">🏠 Go Home</a>
+                <a href="/" class="btn-tertiary">🏠 {{ _('Go Home') }}</a>
             </div>
         </div>
     </div>

@@ -3,35 +3,35 @@
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 
 <head>
-	<title>Edit Student</title>
+	<title>{{ _('Edit Student') }}</title>
 </head>
 <body>
 	{% include 'menu.html' %}
 	<div class="form-container">
 		<div class="form-header">
-			<h1>✏️ Edit Student</h1>
-			<p>Update the student information below</p>
+			<h1>✏️ {{ _('Edit Student') }}</h1>
+			<p>{{ _('Update the student information below') }}</p>
 		</div>
 		<form method="POST" action="/edit_student/{{ student.id }}" class="modern-form">
 			<div class="form-group">
-				<label for="name">👤 First Name:</label>
-				<input type="text" id="name" name="name" required placeholder="Enter first name" value="{{ student.name }}">
+				<label for="name">👤 {{ _('First Name') }}:</label>
+				<input type="text" id="name" name="name" required placeholder="{{ _('Enter first name') }}" value="{{ student.name }}">
 			</div>
 			<div class="form-group">
-				<label for="surname">📝 Surname:</label>
-				<input type="text" id="surname" name="surname" required placeholder="Enter surname" value="{{ student.surname }}">
+				<label for="surname">📝 {{ _('Surname') }}:</label>
+				<input type="text" id="surname" name="surname" required placeholder="{{ _('Enter surname') }}" value="{{ student.surname }}">
 			</div>
 			<div class="form-group">
-				<label for="nameclass">🏛️ Class:</label>
-				<input type="text" id="nameclass" name="nameclass" required placeholder="e.g., 1A, 2B" value="{{ student.nameclass }}">
+				<label for="nameclass">🏛️ {{ _('Class') }}:</label>
+				<input type="text" id="nameclass" name="nameclass" required placeholder="{{ _('e.g., 1A, 2B') }}" value="{{ student.nameclass }}">
 			</div>
 			<div class="form-group">
-				<label for="note">📊 Grade/Note:</label>
+				<label for="note">📊 {{ _('Grade/Note') }}:</label>
 				<input type="number" id="note" name="note" required placeholder="0-10" min="0" max="10" step="0.1" value="{{ student.note }}">
 			</div>
 			<div class="form-actions">
-				<input type="submit" value="✅ Update Student" class="btn-submit">
-				<a href="/students" class="btn-cancel">🚫 Cancel</a>
+				<input type="submit" value="✅ {{ _('Update Student') }}" class="btn-submit">
+				<a href="/students" class="btn-cancel">🚫 {{ _('Cancel') }}</a>
 			</div>
 		</form>
 	</div>

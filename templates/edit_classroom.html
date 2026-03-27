@@ -3,27 +3,27 @@
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 
 <head>
-	<title>Edit Classroom</title>
+	<title>{{ _('Edit Classroom') }}</title>
 </head>
 <body>	
 	{% include 'menu.html' %}
 	<div class="form-container">
 		<div class="form-header">
-			<h1>✏️ Edit Classroom</h1>
-			<p>Update the classroom information below</p>
+			<h1>✏️ {{ _('Edit Classroom') }}</h1>
+			<p>{{ _('Update the classroom information below') }}</p>
 		</div>
 		<form method="POST" action="/edit_classroom/{{ classroom.id }}" class="modern-form">
 			<div class="form-group">
-				<label for="nameclass">🏛️ Class Name:</label>
-				<input type="text" id="nameclass" name="nameclass" required placeholder="e.g., 1A, 2B, 3C" value="{{ classroom.nameclass }}">
+				<label for="nameclass">🏛️ {{ _('Class Name') }}:</label>
+				<input type="text" id="nameclass" name="nameclass" required placeholder="{{ _('e.g., 1A, 2B, 3C') }}" value="{{ classroom.nameclass }}">
 			</div>
 			<div class="form-group">
-				<label for="course">📚 Course:</label>
-				<input type="text" id="course" name="course" required placeholder="e.g., Mathematics, Science" value="{{ classroom.course }}">
+				<label for="course">📚 {{ _('Course') }}:</label>
+				<input type="text" id="course" name="course" required placeholder="{{ _('e.g., Mathematics, Science') }}" value="{{ classroom.course }}">
 			</div>
 			<div class="form-actions">
-				<input type="submit" value="✅ Update Classroom" class="btn-submit">
-				<a href="/classrooms" class="btn-cancel">🚫 Cancel</a>
+				<input type="submit" value="✅ {{ _('Update Classroom') }}" class="btn-submit">
+				<a href="/classrooms" class="btn-cancel">🚫 {{ _('Cancel') }}</a>
 			</div>
 		</form>
 	</div>

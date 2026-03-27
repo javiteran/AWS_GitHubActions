@@ -1,6 +1,6 @@
 <nav class="main-nav">
     <div class="nav-brand">
-        <h2>🏫 Sistema Escolar.
+        <h2>🏫 {{ _('School System') }}.
             {% if current_page %}
                 <span class="current-page">→ {{ current_page }}</span>
             {% endif %}
@@ -8,10 +8,14 @@
     </div>
     <ul class="nav-menu">
         <li class="nav-item">🖥️ </li>
-        <li class="nav-item"><a href="/students" class="nav-link {{ 'active' if current_route == 'students' }}">👥 List Students</a></li>
-        <li class="nav-item"><a href="/classrooms" class="nav-link {{ 'active' if current_route == 'classrooms' }}">🏛️ List Classrooms</a></li>
-        <li class="nav-item"><a href="/add_student" class="nav-link {{ 'active' if current_route == 'add_student' }}">➕ Add Student</a></li>
-        <li class="nav-item"><a href="/add_classroom" class="nav-link {{ 'active' if current_route == 'add_classroom' }}">🏫 Add Classroom</a></li>
+        <li class="nav-item"><a href="/students" class="nav-link {{ 'active' if current_route == 'students' }}">👥 {{ _('List Students') }}</a></li>
+        <li class="nav-item"><a href="/classrooms" class="nav-link {{ 'active' if current_route == 'classrooms' }}">🏛️ {{ _('List Classrooms') }}</a></li>
+        <li class="nav-item"><a href="/add_student" class="nav-link {{ 'active' if current_route == 'add_student' }}">➕ {{ _('Add Student') }}</a></li>
+        <li class="nav-item"><a href="/add_classroom" class="nav-link {{ 'active' if current_route == 'add_classroom' }}">🏫 {{ _('Add Classroom') }}</a></li>
         <li class="nav-item">🕸 {{ container_id }}</li>
+        <li class="nav-item lang-switcher">
+            <a href="/set_language/en" class="lang-btn {{ 'lang-active' if current_locale == 'en' }}">EN</a>
+            <a href="/set_language/es" class="lang-btn {{ 'lang-active' if current_locale == 'es' }}">ES</a>
+        </li>
     </ul>
 </nav>
