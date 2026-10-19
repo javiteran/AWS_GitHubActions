@@ -7,15 +7,7 @@ Este proyecto implementa una arquitectura moderna para desplegar una aplicación
 
 ## 🏗️ Arquitectura General
 
-```text
-GitHub Actions ──► ECR (Docker Image)
-             │
-             └──► ECS Fargate (Task/Service)
-                            │
-                            └──► Application Load Balancer
-                                                 │
-                                                 └──► Internet
-```
+![Diagrama de arquitectura de AWS ECS Fargate](diagrama/CreaEntornoECS_FargateBasico.svg)
 
 - **Código fuente**: Python (Flask)
 - **Infraestructura**: CloudFormation (VPC, subredes, ECS, ALB, ECR, IAM, etc.)
